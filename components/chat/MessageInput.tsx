@@ -1,4 +1,4 @@
-import { useRouter } from 'next/navigation'
+import { useNavbar } from '@/lib/navbar-context'
 
 interface MessageInputProps {
   newMessage: string
@@ -17,10 +17,10 @@ export default function MessageInput({
   isSending, 
   user 
 }: MessageInputProps) {
-  const router = useRouter()
+  const { setIsSidebarOpen } = useNavbar()
 
   return (
-    <div className="border-t border-vintage-medium-gray bg-vintage-charcoal p-4 shadow-2xl">
+    <div className="p-4">
       {user ? (
         <div className="flex items-center space-x-3">
           <input
@@ -55,7 +55,7 @@ export default function MessageInput({
             className="flex-1 border-2 border-vintage-medium-gray rounded-xl px-4 py-3 bg-gradient-to-r from-vintage-dark-gray to-vintage-medium-gray text-vintage-light-gray cursor-not-allowed shadow-lg"
           />
           <button
-            onClick={() => router.push('/?openSidebar=true')}
+            onClick={() => setIsSidebarOpen(true)}
             className="w-12 h-12 bg-vintage-green text-white rounded-xl hover:bg-vintage-green-light transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 border border-vintage-bronze flex items-center justify-center"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

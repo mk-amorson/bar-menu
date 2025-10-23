@@ -4,6 +4,7 @@ import { Comfortaa } from 'next/font/google'
 import { NavbarProvider } from '@/lib/navbar-context'
 import { UserProvider } from '@/lib/user-context'
 import Navbar from '@/components/Navbar'
+import PageTransition from '@/components/PageTransition'
 
 const comfortaa = Comfortaa({ subsets: ['latin'] })
 
@@ -31,9 +32,13 @@ export default function RootLayout({
       <body className={comfortaa.className}>
         <UserProvider>
           <NavbarProvider>
-            <Navbar />
-            <div className="pt-16">
-              {children}
+            <div className="h-screen flex flex-col">
+              <Navbar />
+              <main className="flex-1 overflow-hidden">
+                <PageTransition>
+                  {children}
+                </PageTransition>
+              </main>
             </div>
           </NavbarProvider>
         </UserProvider>
