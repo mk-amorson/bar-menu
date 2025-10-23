@@ -1,8 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // appDir больше не нужен в экспериментальных опциях для Next.js 14
-  // Полностью отключаем CSP для разработки
-  output: 'standalone',
+  // Настройка для статичного экспорта
+  output: 'export',
+  trailingSlash: true,
+  images: {
+    unoptimized: true
+  },
   async headers() {
     return [
       {

@@ -1,82 +1,125 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>TAP22</title>
-    <meta name="description" content="Авторизация через Telegram виджет">
-    <link rel="shortcut icon" href="/tap_logo_website.jpg">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TAP22 - Статус сервера</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            margin: 0;
-            padding: 0;
             background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-            color: white;
+            color: #fff;
+            margin: 0;
+            padding: 20px;
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
         .container {
-            text-align: center;
-            max-width: 600px;
-            padding: 2rem;
-        }
-        .logo {
-            width: 200px;
-            height: 200px;
-            margin: 0 auto 2rem;
-            border-radius: 20px;
-            overflow: hidden;
-        }
-        .logo img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        h1 {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            background: linear-gradient(45deg, #4CAF50, #8BC34A);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
         }
         .status {
-            font-size: 1.2rem;
-            margin-bottom: 2rem;
-            color: #ccc;
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #4CAF50;
+            margin-right: 10px;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
         }
         .btn {
             display: inline-block;
-            padding: 12px 24px;
-            background: #0088cc;
+            background: #007bff;
             color: white;
+            padding: 12px 24px;
             text-decoration: none;
             border-radius: 8px;
-            font-weight: 500;
+            margin: 10px 10px 10px 0;
             transition: background 0.3s;
         }
         .btn:hover {
+            background: #0056b3;
+        }
+        .info {
+            background: rgba(0, 123, 255, 0.1);
+            border: 1px solid #007bff;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .telegram-btn {
+            background: #0088cc;
+        }
+        .telegram-btn:hover {
             background: #006699;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="logo">
-            <img src="/tap_logo_website.jpg" alt="TAP22 Logo">
-        </div>
-        <h1>TAP22</h1>
+        <h1>🚀 TAP22 - Статус сервера</h1>
+        
         <div class="status">
-            Сайт успешно развернут на Jino хостинге!<br>
-            Домен: testing.tap-22.ru
+            <div class="status-dot"></div>
+            <span>Next.js сервер работает на порту 3000</span>
         </div>
-        <div class="telegram-widget">
-            <p>Telegram виджет будет доступен после настройки Node.js сервера</p>
-            <a href="#" class="btn">Войти через Telegram</a>
+        
+        <div class="info">
+            <h3>📊 Информация о сервере:</h3>
+            <ul>
+                <li><strong>Домен:</strong> testing.tap-22.ru</li>
+                <li><strong>Next.js порт:</strong> 3000</li>
+                <li><strong>Статус:</strong> ✅ Активен</li>
+                <li><strong>Режим:</strong> Development</li>
+            </ul>
         </div>
+        
+        <h3>🔗 Доступ к приложению:</h3>
+        <a href="http://localhost:3000" class="btn" target="_blank">
+            Открыть Next.js приложение
+        </a>
+        
+        <h3>📱 Telegram виджет:</h3>
+        <p>Telegram виджет настроен для домена testing.tap-22.ru</p>
+        <a href="https://t.me/tap22_combot" class="btn telegram-btn" target="_blank">
+            Открыть Telegram бот
+        </a>
+        
+        <div class="info">
+            <h3>⚙️ Техническая информация:</h3>
+            <ul>
+                <li><strong>Node.js:</strong> v18.20.8</li>
+                <li><strong>Next.js:</strong> 14.2.33</li>
+                <li><strong>Supabase:</strong> Подключен</li>
+                <li><strong>Telegram Bot:</strong> tap22_combot</li>
+                <li><strong>Хостинг:</strong> Jino</li>
+            </ul>
+        </div>
+        
+        <div class="info">
+            <h3>🔧 Что работает:</h3>
+            <ul>
+                <li>✅ Next.js сервер запущен</li>
+                <li>✅ Supabase подключен</li>
+                <li>✅ Telegram бот настроен</li>
+                <li>✅ Домен доступен</li>
+                <li>⚠️ PHP прокси не настроен</li>
+            </ul>
+        </div>
+        
+        <p><em>Последнее обновление: 23 октября 2025</em></p>
     </div>
 </body>
 </html>
