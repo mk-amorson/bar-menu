@@ -8,7 +8,6 @@ export default function Navbar() {
   const { navbarState, setNavbarState, isSidebarOpen, setIsSidebarOpen, isPageTransitioning, setIsPageTransitioning } = useNavbar()
 
   const toggleSidebar = () => {
-    console.log('Toggle sidebar clicked, current state:', isSidebarOpen)
     setIsSidebarOpen(!isSidebarOpen)
   }
 

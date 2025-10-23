@@ -22,8 +22,6 @@ export default function Sidebar() {
   const { user, setUser, setIsLoading, setError } = useUser()
   const router = useRouter()
 
-  // Отладочная информация
-  console.log('Sidebar render:', { navbarState, isSidebarOpen, isPageTransitioning, sidebarContentState })
 
   // Функция обработки авторизации Telegram
   const handleTelegramAuth = async (telegramUser: any) => {
