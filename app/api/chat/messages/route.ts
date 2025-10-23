@@ -4,8 +4,6 @@ import { supabase } from '@/lib/supabase'
 // GET - получение сообщений
 export async function GET() {
   try {
-    console.log('Fetching messages...')
-    
     const { data: messages, error } = await supabase
       .from('chat_messages')
       .select(`
@@ -30,7 +28,6 @@ export async function GET() {
       }, { status: 500 })
     }
 
-    console.log('Messages fetched successfully:', messages?.length || 0)
     return NextResponse.json({ messages })
   } catch (error) {
     console.error('GET messages error:', error)

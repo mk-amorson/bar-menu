@@ -1,27 +1,10 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
 import { useNavbar } from '@/lib/navbar-context'
 import { useUser } from '@/lib/user-context'
 import Sidebar from '@/components/Sidebar'
 import StatusDisplay from '@/components/StatusDisplay'
 import SidebarAutoOpen from '@/components/SidebarAutoOpen'
-
-interface ChatMessage {
-  id: number
-  user_id: number
-  message: string
-  created_at: string
-  updated_at: string
-  users?: {
-    first_name: string
-    last_name?: string
-    username?: string
-    photo_url?: string
-    role?: string
-  }
-}
 
 export default function Home() {
   const { navbarState } = useNavbar()

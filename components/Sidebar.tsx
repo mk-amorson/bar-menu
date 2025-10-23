@@ -18,7 +18,6 @@ function ChatButton({ onClick }: { onClick: () => void }) {
       onClick={(e) => {
         e.preventDefault()
         e.stopPropagation()
-        console.log('🔧 Chat button clicked - redirecting to /chat')
         onClick()
       }}
       className="w-full text-left p-4 bg-vintage-dark-gray hover:bg-vintage-medium-gray rounded-xl transition-all duration-300 flex items-center space-x-3 group cursor-pointer"
@@ -70,8 +69,6 @@ function TelegramWidget({ botUsername, authUrl }: { botUsername: string, authUrl
         container.appendChild(script)
 
         script.onload = () => {
-          console.log('✅ Telegram widget script loaded')
-          
           // Принудительно делаем виджет кликабельным
           setTimeout(() => {
             const iframe = container.querySelector('iframe')
@@ -79,7 +76,6 @@ function TelegramWidget({ botUsername, authUrl }: { botUsername: string, authUrl
               iframe.style.pointerEvents = 'auto'
               iframe.style.zIndex = '9999'
               iframe.style.position = 'relative'
-              console.log('✅ Telegram iframe made clickable')
             }
             
             // Также проверяем кнопку внутри iframe
@@ -88,7 +84,6 @@ function TelegramWidget({ botUsername, authUrl }: { botUsername: string, authUrl
               button.style.pointerEvents = 'auto'
               button.style.zIndex = '9999'
               button.style.position = 'relative'
-              console.log('✅ Telegram button made clickable')
             }
           }, 1000)
         }
@@ -149,7 +144,6 @@ function UserProfile({ user, onLogout }: { user: any, onLogout: () => void }) {
         onClick={(e) => {
           e.preventDefault()
           e.stopPropagation()
-          console.log('🔧 Logout button clicked')
           onLogout()
         }}
         className="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200"
@@ -174,7 +168,6 @@ export default function Sidebar() {
 
   // Функция обработки авторизации Telegram
   const handleTelegramAuth = async (telegramUser: any) => {
-    console.log('🔐 Telegram auth received:', telegramUser)
     setIsLoading(true)
     setError(null)
     
@@ -220,7 +213,6 @@ export default function Sidebar() {
   }
 
   const goToChat = () => {
-    console.log('🔧 Going to chat - redirecting to /chat')
     window.location.href = '/chat'
   }
 

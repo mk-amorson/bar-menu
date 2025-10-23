@@ -45,7 +45,6 @@ export async function POST(request: NextRequest) {
     
     if (fetchError && fetchError.code === 'PGRST116') {
       // Пользователь не существует, создаем нового
-      console.log('Creating new user:', authData.id)
       const { data: newUser, error: insertError } = await supabase
         .from('users')
         .insert({
@@ -69,7 +68,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Database error', details: fetchError }, { status: 500 })
     } else {
       // Пользователь существует, обновляем данные
-      console.log('Updating existing user:', authData.id)
       const { data: updatedUser, error: updateError } = await supabase
         .from('users')
         .update({
