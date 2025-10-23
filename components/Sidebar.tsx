@@ -63,6 +63,10 @@ export default function Sidebar() {
     setUser(null)
   }
 
+  const goToChat = () => {
+    setNavbarState('chat')
+  }
+
   // Проверяем авторизацию при загрузке
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -128,7 +132,7 @@ export default function Sidebar() {
             <div className="space-y-4">
               {/* Пункт меню - Общий чат */}
               <button
-                onClick={() => setNavbarState('chat')}
+                onClick={goToChat}
                 className="w-full text-left p-4 bg-vintage-dark-gray hover:bg-vintage-medium-gray rounded-xl transition-all duration-300 flex items-center space-x-3 group"
               >
                 <div className="p-2 rounded-lg group-hover:transition-colors duration-300">
