@@ -110,10 +110,40 @@ export default function Sidebar() {
 
           script.onload = () => {
             console.log('✅ Telegram widget script loaded')
+            
+            // Проверяем через 3 секунды, появился ли виджет
+            setTimeout(() => {
+              const telegramButton = container.querySelector('a')
+              if (!telegramButton) {
+                console.log('⚠️ Telegram widget not found, adding fallback button')
+                
+                // Добавляем fallback кнопку
+                const fallbackButton = document.createElement('button')
+                fallbackButton.textContent = 'Войти через Telegram'
+                fallbackButton.className = 'w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors'
+                fallbackButton.onclick = () => {
+                  const telegramAuthUrl = `https://oauth.telegram.org/auth?bot_id=${botUsername}&origin=${encodeURIComponent(authUrl)}&return_to=${encodeURIComponent(authUrl + '/')}&size=large&userpic=false&request_access=write`
+                  console.log('🔧 Opening Telegram auth in new window:', telegramAuthUrl)
+                  window.open(telegramAuthUrl, '_blank', 'width=400,height=500')
+                }
+                container.appendChild(fallbackButton)
+              }
+            }, 3000)
           }
 
           script.onerror = (error) => {
             console.error('❌ Telegram widget script failed to load:', error)
+            
+            // Добавляем fallback кнопку если виджет не загрузился
+            const fallbackButton = document.createElement('button')
+            fallbackButton.textContent = 'Войти через Telegram'
+            fallbackButton.className = 'w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors'
+            fallbackButton.onclick = () => {
+              const telegramAuthUrl = `https://oauth.telegram.org/auth?bot_id=${botUsername}&origin=${encodeURIComponent(authUrl)}&return_to=${encodeURIComponent(authUrl + '/')}&size=large&userpic=false&request_access=write`
+              console.log('🔧 Opening Telegram auth in new window:', telegramAuthUrl)
+              window.open(telegramAuthUrl, '_blank', 'width=400,height=500')
+            }
+            container.appendChild(fallbackButton)
           }
         } else {
           container.innerHTML = '' // Убеждаемся, что виджет удален, если пользователь вошел
