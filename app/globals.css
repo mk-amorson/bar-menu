@@ -38,3 +38,32 @@ code {
 }
 
 /* Убраны винтажные эффекты свечения */
+
+/* Принудительное исправление Telegram виджета */
+#telegram-widget-sidebar iframe {
+  pointer-events: auto !important;
+  z-index: 9999 !important;
+  position: relative !important;
+  cursor: pointer !important;
+}
+
+#telegram-widget-sidebar a {
+  pointer-events: auto !important;
+  z-index: 9999 !important;
+  position: relative !important;
+  cursor: pointer !important;
+}
+
+/* Дополнительные стили для Telegram виджета */
+.telegram-login-widget {
+  pointer-events: auto !important;
+  z-index: 9999 !important;
+  position: relative !important;
+}
+
+.telegram-login-widget iframe {
+  pointer-events: auto !important;
+  z-index: 9999 !important;
+  position: relative !important;
+  cursor: pointer !important;
+}

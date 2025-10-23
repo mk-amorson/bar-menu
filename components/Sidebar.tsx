@@ -71,6 +71,26 @@ function TelegramWidget({ botUsername, authUrl }: { botUsername: string, authUrl
 
         script.onload = () => {
           console.log('✅ Telegram widget script loaded')
+          
+          // Принудительно делаем виджет кликабельным
+          setTimeout(() => {
+            const iframe = container.querySelector('iframe')
+            if (iframe) {
+              iframe.style.pointerEvents = 'auto'
+              iframe.style.zIndex = '9999'
+              iframe.style.position = 'relative'
+              console.log('✅ Telegram iframe made clickable')
+            }
+            
+            // Также проверяем кнопку внутри iframe
+            const button = container.querySelector('a')
+            if (button) {
+              button.style.pointerEvents = 'auto'
+              button.style.zIndex = '9999'
+              button.style.position = 'relative'
+              console.log('✅ Telegram button made clickable')
+            }
+          }, 1000)
         }
 
         script.onerror = (error) => {
@@ -81,8 +101,16 @@ function TelegramWidget({ botUsername, authUrl }: { botUsername: string, authUrl
   }, [isClient, botUsername, authUrl])
 
   return (
-    <div className="w-full max-w-xs">
-      <div id="telegram-widget-sidebar" className="flex justify-center"></div>
+    <div className="w-full max-w-xs" style={{ position: 'relative', zIndex: 9999 }}>
+      <div 
+        id="telegram-widget-sidebar" 
+        className="flex justify-center"
+        style={{ 
+          position: 'relative',
+          zIndex: 9999,
+          pointerEvents: 'auto'
+        }}
+      ></div>
     </div>
   )
 }
@@ -189,11 +217,51 @@ export default function Sidebar() {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       window.onTelegramAuth = handleTelegramAuth
+      
+      // Дополнительная проверка виджета каждые 2 секунды
+      const interval = setInterval(() => {
+        const container = document.getElementById('telegram-widget-sidebar')
+        if (container) {
+          const iframe = container.querySelector('iframe')
+          if (iframe) {
+            iframe.style.pointerEvents = 'auto'
+            iframe.style.zIndex = '9999'
+            iframe.style.position = 'relative'
+            iframe.style.cursor = 'pointer'
+          }
+          
+          const button = container.querySelector('a')
+          if (button) {
+            button.style.pointerEvents = 'auto'
+            button.style.zIndex = '9999'
+            button.style.position = 'relative'
+            button.style.cursor = 'pointer'
+          }
+        }
+      }, 2000)
+      
+      return () => clearInterval(interval)
     }
   }, [handleTelegramAuth])
 
   return (
     <>
+      {/* CSS для исправления Telegram виджета */}
+      <style jsx>{`
+        #telegram-widget-sidebar iframe {
+          pointer-events: auto !important;
+          z-index: 9999 !important;
+          position: relative !important;
+          cursor: pointer !important;
+        }
+        #telegram-widget-sidebar a {
+          pointer-events: auto !important;
+          z-index: 9999 !important;
+          position: relative !important;
+          cursor: pointer !important;
+        }
+      `}</style>
+      
       {/* Боковое меню */}
       <div className={`fixed top-0 right-0 bottom-0 w-80 bg-black shadow-xl z-40 transition-transform duration-300 ease-in-out ${isSidebarOpen ? 'translate-x-0' : 'translate-x-full'}`}>
         <div className="flex flex-col h-full pt-16">
