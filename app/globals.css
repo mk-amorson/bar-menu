@@ -67,3 +67,19 @@ code {
   position: relative !important;
   cursor: pointer !important;
 }
+
+/* Исправление кнопки выхода */
+button[onclick*="onLogout"] {
+  pointer-events: auto !important;
+  z-index: 9999 !important;
+  position: relative !important;
+  cursor: pointer !important;
+}
+
+/* Дополнительные стили для всех кнопок в сайдбаре */
+.sidebar button {
+  pointer-events: auto !important;
+  z-index: 9999 !important;
+  position: relative !important;
+  cursor: pointer !important;
+}

@@ -146,8 +146,19 @@ function UserProfile({ user, onLogout }: { user: any, onLogout: () => void }) {
         </div>
       </div>
       <button
-        onClick={onLogout}
+        onClick={(e) => {
+          e.preventDefault()
+          e.stopPropagation()
+          console.log('🔧 Logout button clicked')
+          onLogout()
+        }}
         className="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200"
+        style={{ 
+          pointerEvents: 'auto',
+          zIndex: 9999,
+          position: 'relative',
+          cursor: 'pointer'
+        }}
       >
         Выйти из аккаунта
       </button>
@@ -263,7 +274,7 @@ export default function Sidebar() {
       `}</style>
       
       {/* Боковое меню */}
-      <div className={`fixed top-0 right-0 bottom-0 w-80 bg-black shadow-xl z-40 transition-transform duration-300 ease-in-out ${isSidebarOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+      <div className={`sidebar fixed top-0 right-0 bottom-0 w-80 bg-black shadow-xl z-40 transition-transform duration-300 ease-in-out ${isSidebarOpen ? 'translate-x-0' : 'translate-x-full'}`}>
         <div className="flex flex-col h-full pt-16">
           {/* Контент */}
           <div className="flex-1 p-6">
