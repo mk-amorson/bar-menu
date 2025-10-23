@@ -1,10 +1,18 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Настройка для статичного экспорта
-  output: 'export',
-  trailingSlash: true,
-  images: {
-    unoptimized: true
+  // Обычная конфигурация для Vercel (не статичный экспорт)
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'X-Frame-Options',
+            value: 'SAMEORIGIN',
+          },
+        ],
+      },
+    ]
   },
 }
 
