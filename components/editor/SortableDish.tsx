@@ -1,42 +1,17 @@
 'use client'
 
 import { useState } from 'react'
-import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
-import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable'
-import { restrictToVerticalAxis } from '@dnd-kit/modifiers'
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { DishWithCategory } from '@/types/dishes'
 import SortableDishItem from './SortableDishItem'
 
 interface SortableDishProps {
   dishes: DishWithCategory[]
-  onOrderChange: (newOrder: DishWithCategory[]) => void
   onDataChange: () => void
 }
 
-export default function SortableDish({ dishes, onOrderChange, onDataChange }: SortableDishProps) {
+export default function SortableDish({ dishes, onDataChange }: SortableDishProps) {
   const [editingDish, setEditingDish] = useState<DishWithCategory | null>(null)
-
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  )
-
-  const handleDragEnd = (event: any) => {
-    const { active, over } = event
-
-    if (active.id !== over.id) {
-      const oldIndex = dishes.findIndex(dish => `dish-${dish.id}` === active.id)
-      const newIndex = dishes.findIndex(dish => `dish-${dish.id}` === over.id)
-      
-      console.log('Moving dish:', { oldIndex, newIndex })
-      const newOrder = arrayMove(dishes, oldIndex, newIndex)
-      
-      // Передаем управление в SortableCategory через onOrderChange
-      onOrderChange(newOrder)
-    }
-  }
 
 
   const updateDish = async (dish: DishWithCategory) => {
@@ -91,26 +66,20 @@ export default function SortableDish({ dishes, onOrderChange, onDataChange }: So
   }
 
   return (
-    <DndContext
-      sensors={sensors}
-      collisionDetection={closestCenter}
-      onDragEnd={handleDragEnd}
-    >
-      <SortableContext items={dishes.map(d => `dish-${d.id}`)} strategy={verticalListSortingStrategy}>
-        <div className="space-y-2">
-          {dishes.map((dish) => (
-            <SortableDishItem
-              key={dish.id}
-              dish={dish}
-              isEditing={editingDish?.id === dish.id}
-              onEdit={() => setEditingDish(dish)}
-              onSave={updateDish}
-              onCancel={() => setEditingDish(null)}
-              onDelete={deleteDish}
-            />
-          ))}
-        </div>
-      </SortableContext>
-    </DndContext>
+    <SortableContext items={dishes.map(d => `dish-${d.id}`)} strategy={verticalListSortingStrategy}>
+      <div className="space-y-2">
+        {dishes.map((dish) => (
+          <SortableDishItem
+            key={dish.id}
+            dish={dish}
+            isEditing={editingDish?.id === dish.id}
+            onEdit={() => setEditingDish(dish)}
+            onSave={updateDish}
+            onCancel={() => setEditingDish(null)}
+            onDelete={deleteDish}
+          />
+        ))}
+      </div>
+    </SortableContext>
   )
 }

@@ -78,38 +78,6 @@ export default function SortableCategory({ category, dishes, onDelete, onDataCha
     }
   }
 
-  const updateDishOrder = async (newOrder: DishWithCategory[]) => {
-    // Сначала обновляем локальное состояние для мгновенной анимации
-    onUpdateDishes((prevDishes: DishWithCategory[]) => {
-      const updatedDishes = [...prevDishes]
-      newOrder.forEach((dish, index) => {
-        const dishIndex = updatedDishes.findIndex(d => d.id === dish.id)
-        if (dishIndex !== -1) {
-          updatedDishes[dishIndex] = { ...updatedDishes[dishIndex], sort_order: index }
-        }
-      })
-      return updatedDishes
-    })
-    
-    try {
-      const updates = newOrder.map((dish, index) => ({
-        id: dish.id,
-        sort_order: index
-      }))
-
-      await Promise.all(
-        updates.map(update =>
-          fetch('/api/dishes/admin', {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(update)
-          })
-        )
-      )
-    } catch (error) {
-      console.error('Error updating dish order:', error)
-    }
-  }
 
   return (
     <div
@@ -166,7 +134,6 @@ export default function SortableCategory({ category, dishes, onDelete, onDataCha
       <div className="p-3 sm:p-4">
         <SortableDish
           dishes={dishes}
-          onOrderChange={updateDishOrder}
           onDataChange={onDataChange}
         />
 
