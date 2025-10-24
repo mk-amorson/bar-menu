@@ -21,8 +21,7 @@ export async function uploadImage(file: File): Promise<string | null> {
       console.error('Supabase upload error:', error)
       console.error('Error details:', {
         message: error.message,
-        statusCode: error.statusCode,
-        error: error.error
+        name: error.name
       })
       return null
     }
