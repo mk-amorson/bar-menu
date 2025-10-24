@@ -200,6 +200,8 @@ export default function CategoryManager({ onDataChange }: CategoryManagerProps) 
   }
 
   const updateDishOrderWithinCategory = async (categoryId: number, activeDishId: number, overDishId: number) => {
+    console.log('updateDishOrderWithinCategory called:', { categoryId, activeDishId, overDishId })
+    
     // Получаем все блюда этой категории с правильной сортировкой
     const categoryDishes = dishes
       .filter(dish => dish.category_id === categoryId)
