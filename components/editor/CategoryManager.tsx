@@ -133,16 +133,19 @@ export default function CategoryManager({ onDataChange }: CategoryManagerProps) 
 
     // Если перетаскиваем категорию (только если не перетаскиваем блюдо)
     if (activeId.toString().startsWith('category-') && overId.toString().startsWith('category-')) {
-      const activeCategoryId = parseInt(activeId.toString().replace('category-', ''))
-      const overCategoryId = parseInt(overId.toString().replace('category-', ''))
-      
-      const oldIndex = categories.findIndex(category => category.id === activeCategoryId)
-      const newIndex = categories.findIndex(category => category.id === overCategoryId)
-      
-      if (oldIndex !== newIndex) {
-        console.log('Moving category:', { oldIndex, newIndex })
-        const newOrder = arrayMove(categories, oldIndex, newIndex)
-        updateCategoryOrder(newOrder)
+      // Проверяем, что мы не перетаскиваем блюдо
+      if (!activeId.toString().startsWith('dish-')) {
+        const activeCategoryId = parseInt(activeId.toString().replace('category-', ''))
+        const overCategoryId = parseInt(overId.toString().replace('category-', ''))
+        
+        const oldIndex = categories.findIndex(category => category.id === activeCategoryId)
+        const newIndex = categories.findIndex(category => category.id === overCategoryId)
+        
+        if (oldIndex !== newIndex) {
+          console.log('Moving category:', { oldIndex, newIndex })
+          const newOrder = arrayMove(categories, oldIndex, newIndex)
+          updateCategoryOrder(newOrder)
+        }
       }
     }
     
