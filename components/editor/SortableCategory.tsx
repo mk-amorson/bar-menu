@@ -11,9 +11,10 @@ interface SortableCategoryProps {
   dishes: DishWithCategory[]
   onDelete: (id: number) => void
   onDataChange: () => void
+  isDraggingDish?: boolean
 }
 
-export default function SortableCategory({ category, dishes, onDelete, onDataChange }: SortableCategoryProps) {
+export default function SortableCategory({ category, dishes, onDelete, onDataChange, isDraggingDish = false }: SortableCategoryProps) {
   const [isAddingDish, setIsAddingDish] = useState(false)
   const [newDish, setNewDish] = useState({
     name: '',
@@ -32,7 +33,8 @@ export default function SortableCategory({ category, dishes, onDelete, onDataCha
     transition,
     isDragging,
   } = useSortable({ 
-    id: `category-${category.id}`
+    id: `category-${category.id}`,
+    disabled: isDraggingDish
   })
 
   const style = {
