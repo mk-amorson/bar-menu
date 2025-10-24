@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { useNavbar } from '@/lib/navbar-context'
 import { useUser } from '@/lib/user-context'
 import Sidebar from '@/components/Sidebar'
@@ -9,6 +10,7 @@ import CategoryManager from '@/components/editor/CategoryManager'
 export default function EditorPage() {
   const { navbarState, setNavbarState } = useNavbar()
   const { user } = useUser()
+  const router = useRouter()
   const [refreshKey, setRefreshKey] = useState(0)
 
   // Устанавливаем состояние навигации при загрузке редактора
@@ -16,20 +18,35 @@ export default function EditorPage() {
     setNavbarState('editor')
   }, [setNavbarState])
 
-  // Временно убираем проверку авторизации для тестирования
-  // if (user?.role !== 'ADMIN') {
-  //   return (
-  //     <div className="h-full bg-vintage-black">
-  //       <Sidebar />
-  //       <div className="h-full flex items-center justify-center">
-  //         <div className="text-center">
-  //           <h1 className="text-white text-2xl mb-4">Доступ запрещен</h1>
-  //           <p className="text-gray-400">У вас нет прав для доступа к редактору</p>
-  //         </div>
-  //       </div>
-  //     </div>
-  //   )
-  // }
+  // Проверка авторизации и роли ADMIN
+  useEffect(() => {
+    if (!user) {
+      // Если пользователь не авторизован, перенаправляем на главную
+      router.push('/')
+      return
+    }
+    
+    if (user.role !== 'ADMIN') {
+      // Если пользователь не ADMIN, перенаправляем на главную
+      router.push('/')
+      return
+    }
+  }, [user, router])
+
+  // Если пользователь не авторизован или не ADMIN, показываем загрузку
+  if (!user || user.role !== 'ADMIN') {
+    return (
+      <div className="h-full bg-vintage-black">
+        <Sidebar />
+        <div className="h-full flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-vintage-green mx-auto mb-4"></div>
+            <p className="text-gray-400">Проверка доступа...</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   const handleDataChange = () => {
     setRefreshKey(prev => prev + 1)
