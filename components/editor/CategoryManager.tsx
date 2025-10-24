@@ -246,7 +246,9 @@ export default function CategoryManager({ onDataChange }: CategoryManagerProps) 
   }
 
   const getDishesForCategory = (categoryId: number) => {
-    return dishes.filter(dish => dish.category_id === categoryId)
+    return dishes
+      .filter(dish => dish.category_id === categoryId)
+      .sort((a, b) => a.sort_order - b.sort_order)
   }
 
   useEffect(() => {
