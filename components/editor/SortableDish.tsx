@@ -58,7 +58,7 @@ export default function SortableDish({ dishes, onOrderChange, onDataChange }: So
         )
       )
       
-      onDataChange() // Обновляем данные после сохранения в БД
+      // Не вызываем onDataChange() чтобы избежать перезагрузки
     } catch (error) {
       console.error('Error updating dish order:', error)
     }

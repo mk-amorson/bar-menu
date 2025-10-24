@@ -110,8 +110,6 @@ export default function CategoryManager({ onDataChange }: CategoryManagerProps) 
           })
         )
       )
-
-      onDataChange()
     } catch (error) {
       console.error('Error updating category order:', error)
     }
@@ -180,7 +178,7 @@ export default function CategoryManager({ onDataChange }: CategoryManagerProps) 
       })
 
       if (response.ok) {
-        onDataChange()
+        // Не вызываем onDataChange() чтобы избежать перезагрузки
       }
     } catch (error) {
       console.error('Error updating dish category:', error)
