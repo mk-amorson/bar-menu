@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
         category_id: parseInt(category_id),
         name: name.trim(),
         description: description?.trim() || null,
-        price: parseFloat(price),
+        price: typeof price === 'string' ? parseFloat(price) : price,
         image_url: image_url?.trim() || null,
         is_new: Boolean(is_new),
         is_available: Boolean(is_available !== false), // по умолчанию true

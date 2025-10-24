@@ -161,7 +161,7 @@ export default function SortableDishItem({
           
           <div className="flex items-center space-x-1 sm:space-x-2 ml-2">
             <button
-              onClick={() => toggleDishStatus(dish, 'is_new')}
+              onClick={() => onToggleStatus(dish, 'is_new')}
               className={`px-2 py-1 rounded text-xs transition-colors ${
                 dish.is_new 
                   ? 'bg-vintage-green text-white' 
@@ -173,7 +173,7 @@ export default function SortableDishItem({
             </button>
             
             <button
-              onClick={() => toggleDishStatus(dish, 'is_available')}
+              onClick={() => onToggleStatus(dish, 'is_available')}
               className={`px-2 py-1 rounded text-xs transition-colors ${
                 dish.is_available 
                   ? 'bg-green-600 text-white' 
