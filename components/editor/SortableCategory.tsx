@@ -88,7 +88,7 @@ export default function SortableCategory({ category, dishes, onDelete, onDataCha
       {/* Заголовок категории */}
       <div className="p-3 sm:p-4 border-b border-vintage-medium-gray">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-6">
             {/* Полоски для перетаскивания */}
             <div 
               className="flex flex-col space-y-1 cursor-grab active:cursor-grabbing select-none"
@@ -115,7 +115,7 @@ export default function SortableCategory({ category, dishes, onDelete, onDataCha
               onClick={() => setIsAddingDish(true)}
               className="bg-vintage-green hover:bg-vintage-green/80 text-white px-2 sm:px-3 py-1 sm:py-2 rounded text-xs sm:text-sm transition-colors"
             >
-              + Блюдо
+              +
             </button>
             <button
               onClick={() => onDelete(category.id)}

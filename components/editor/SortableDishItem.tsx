@@ -140,7 +140,7 @@ export default function SortableDishItem({
       ) : (
         // Режим просмотра
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-6">
             {/* Полоски для перетаскивания */}
             <div 
               className="flex flex-col space-y-1 cursor-grab active:cursor-grabbing select-none"

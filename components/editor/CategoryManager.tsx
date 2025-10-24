@@ -131,7 +131,7 @@ export default function CategoryManager({ onDataChange }: CategoryManagerProps) 
     const activeId = active.id
     const overId = over.id
 
-    // Если перетаскиваем категорию
+    // Если перетаскиваем категорию (только если не перетаскиваем блюдо)
     if (activeId.toString().startsWith('category-') && overId.toString().startsWith('category-')) {
       const activeCategoryId = parseInt(activeId.toString().replace('category-', ''))
       const overCategoryId = parseInt(overId.toString().replace('category-', ''))
@@ -200,26 +200,18 @@ export default function CategoryManager({ onDataChange }: CategoryManagerProps) 
   }
 
   const updateDishOrderWithinCategory = async (categoryId: number, activeDishId: number, overDishId: number) => {
-    console.log('updateDishOrderWithinCategory called:', { categoryId, activeDishId, overDishId })
-    
     // Получаем все блюда этой категории с правильной сортировкой
     const categoryDishes = dishes
       .filter(dish => dish.category_id === categoryId)
       .sort((a, b) => a.sort_order - b.sort_order)
     
-    console.log('Category dishes before move:', categoryDishes.map(d => ({ id: d.id, sort_order: d.sort_order })))
-    
     // Находим индексы
     const activeIndex = categoryDishes.findIndex(dish => dish.id === activeDishId)
     const overIndex = categoryDishes.findIndex(dish => dish.id === overDishId)
     
-    console.log('Move indices:', { activeIndex, overIndex, activeDishId, overDishId })
-    
     if (activeIndex !== overIndex) {
       // Создаем новый порядок
       const newOrder = arrayMove(categoryDishes, activeIndex, overIndex)
-      
-      console.log('New order:', newOrder.map(d => ({ id: d.id, sort_order: d.sort_order })))
       
       // Обновляем локальное состояние для мгновенной анимации
       setDishes(prevDishes => {
@@ -273,7 +265,7 @@ export default function CategoryManager({ onDataChange }: CategoryManagerProps) 
           onClick={() => setIsAdding(true)}
           className="bg-vintage-green hover:bg-vintage-green/80 text-white px-3 sm:px-4 py-2 rounded-lg transition-colors text-sm sm:text-base"
         >
-          Добавить категорию
+          +
         </button>
       </div>
 
