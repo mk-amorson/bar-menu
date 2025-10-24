@@ -5,7 +5,6 @@ import { useNavbar } from '@/lib/navbar-context'
 import { useUser } from '@/lib/user-context'
 import Sidebar from '@/components/Sidebar'
 import CategoryManager from '@/components/editor/CategoryManager'
-import DishManager from '@/components/editor/DishManager'
 
 export default function EditorPage() {
   const { navbarState, setNavbarState } = useNavbar()
@@ -42,17 +41,16 @@ export default function EditorPage() {
       
       {/* Основной контент */}
       <div className="flex flex-col h-full bg-gradient-to-br from-vintage-black to-vintage-charcoal">
-        <div className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="flex-1 overflow-y-auto px-2 sm:px-4 lg:px-6 py-4 sm:py-6">
           <div className="max-w-6xl mx-auto">
-            <div className="mb-8">
-              <h1 className="text-white text-3xl font-bold mb-2">Редактор меню</h1>
-              <p className="text-gray-400">Управление категориями и блюдами</p>
+            <div className="mb-4 sm:mb-6">
+              <h1 className="text-white text-2xl sm:text-3xl font-bold mb-2">Редактор меню</h1>
+              <p className="text-gray-400 text-sm sm:text-base">Управление категориями и блюдами</p>
             </div>
 
             {/* Интерфейс редактора */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <CategoryManager key={`categories-${refreshKey}`} onCategoryChange={handleDataChange} />
-              <DishManager key={`dishes-${refreshKey}`} onDishChange={handleDataChange} />
+            <div className="space-y-4 sm:space-y-6">
+              <CategoryManager key={`categories-${refreshKey}`} onDataChange={handleDataChange} />
             </div>
           </div>
         </div>

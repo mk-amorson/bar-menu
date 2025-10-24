@@ -1,28 +1,49 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { DishCategory } from '@/types/dishes'
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
+import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable'
+import { restrictToVerticalAxis } from '@dnd-kit/modifiers'
+import { DishCategory, DishWithCategory } from '@/types/dishes'
+import SortableCategory from './SortableCategory'
 
 interface CategoryManagerProps {
-  onCategoryChange: () => void
+  onDataChange: () => void
 }
 
-export default function CategoryManager({ onCategoryChange }: CategoryManagerProps) {
+export default function CategoryManager({ onDataChange }: CategoryManagerProps) {
   const [categories, setCategories] = useState<DishCategory[]>([])
+  const [dishes, setDishes] = useState<DishWithCategory[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isAdding, setIsAdding] = useState(false)
   const [newCategory, setNewCategory] = useState({ name: '', description: '' })
 
-  const loadCategories = async () => {
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  )
+
+  const loadData = async () => {
     try {
       setIsLoading(true)
-      const response = await fetch('/api/categories')
-      if (response.ok) {
-        const data = await response.json()
-        setCategories(data.categories || [])
+      const [categoriesRes, dishesRes] = await Promise.all([
+        fetch('/api/categories'),
+        fetch('/api/dishes/admin')
+      ])
+
+      if (categoriesRes.ok) {
+        const categoriesData = await categoriesRes.json()
+        setCategories(categoriesData.categories || [])
+      }
+
+      if (dishesRes.ok) {
+        const dishesData = await dishesRes.json()
+        setDishes(dishesData.dishes || [])
       }
     } catch (error) {
-      console.error('Error loading categories:', error)
+      console.error('Error loading data:', error)
     } finally {
       setIsLoading(false)
     }
@@ -45,8 +66,8 @@ export default function CategoryManager({ onCategoryChange }: CategoryManagerPro
       if (response.ok) {
         setNewCategory({ name: '', description: '' })
         setIsAdding(false)
-        loadCategories()
-        onCategoryChange()
+        loadData()
+        onDataChange()
       }
     } catch (error) {
       console.error('Error adding category:', error)
@@ -62,25 +83,64 @@ export default function CategoryManager({ onCategoryChange }: CategoryManagerPro
       })
 
       if (response.ok) {
-        loadCategories()
-        onCategoryChange()
+        loadData()
+        onDataChange()
       }
     } catch (error) {
       console.error('Error deleting category:', error)
     }
   }
 
+  const updateCategoryOrder = async (newOrder: DishCategory[]) => {
+    try {
+      const updates = newOrder.map((category, index) => ({
+        id: category.id,
+        sort_order: index
+      }))
+
+      await Promise.all(
+        updates.map(update =>
+          fetch('/api/categories', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(update)
+          })
+        )
+      )
+
+      setCategories(newOrder)
+    } catch (error) {
+      console.error('Error updating category order:', error)
+    }
+  }
+
+  const handleDragEnd = (event: any) => {
+    const { active, over } = event
+
+    if (active.id !== over.id) {
+      const oldIndex = categories.findIndex(category => category.id === active.id)
+      const newIndex = categories.findIndex(category => category.id === over.id)
+      
+      const newOrder = arrayMove(categories, oldIndex, newIndex)
+      updateCategoryOrder(newOrder)
+    }
+  }
+
+  const getDishesForCategory = (categoryId: number) => {
+    return dishes.filter(dish => dish.category_id === categoryId)
+  }
+
   useEffect(() => {
-    loadCategories()
+    loadData()
   }, [])
 
   return (
-    <div className="bg-vintage-dark-gray rounded-2xl p-6">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-white text-xl font-bold">Категории</h2>
+    <div className="bg-vintage-dark-gray rounded-2xl p-4 sm:p-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3">
+        <h2 className="text-white text-lg sm:text-xl font-bold">Категории</h2>
         <button
           onClick={() => setIsAdding(true)}
-          className="bg-vintage-green hover:bg-vintage-green/80 text-white px-4 py-2 rounded-lg transition-colors"
+          className="bg-vintage-green hover:bg-vintage-green/80 text-white px-3 sm:px-4 py-2 rounded-lg transition-colors text-sm sm:text-base"
         >
           Добавить категорию
         </button>
@@ -91,62 +151,64 @@ export default function CategoryManager({ onCategoryChange }: CategoryManagerPro
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-vintage-green mx-auto"></div>
         </div>
       ) : (
-        <div className="space-y-3">
-          {categories.map((category) => (
-            <div key={category.id} className="flex items-center justify-between bg-vintage-charcoal p-3 rounded-lg">
-              <div>
-                <h3 className="text-white font-medium">{category.name}</h3>
-                {category.description && (
-                  <p className="text-vintage-light-gray text-sm">{category.description}</p>
-                )}
-              </div>
-              <button
-                onClick={() => deleteCategory(category.id)}
-                className="text-red-400 hover:text-red-300 transition-colors"
-              >
-                Удалить
-              </button>
-            </div>
-          ))}
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+          modifiers={[restrictToVerticalAxis]}
+        >
+          <SortableContext items={categories.map(c => c.id)} strategy={verticalListSortingStrategy}>
+            <div className="space-y-3">
+              {categories.map((category) => (
+                <SortableCategory
+                  key={category.id}
+                  category={category}
+                  dishes={getDishesForCategory(category.id)}
+                  onDelete={deleteCategory}
+                  onDataChange={onDataChange}
+                />
+              ))}
 
-          {isAdding && (
-            <div className="bg-vintage-charcoal p-4 rounded-lg">
-              <div className="space-y-3">
-                <input
-                  type="text"
-                  placeholder="Название категории"
-                  value={newCategory.name}
-                  onChange={(e) => setNewCategory({ ...newCategory, name: e.target.value })}
-                  className="w-full bg-vintage-dark-gray text-white px-3 py-2 rounded-lg border border-vintage-medium-gray focus:border-vintage-green focus:outline-none"
-                />
-                <input
-                  type="text"
-                  placeholder="Описание (необязательно)"
-                  value={newCategory.description}
-                  onChange={(e) => setNewCategory({ ...newCategory, description: e.target.value })}
-                  className="w-full bg-vintage-dark-gray text-white px-3 py-2 rounded-lg border border-vintage-medium-gray focus:border-vintage-green focus:outline-none"
-                />
-                <div className="flex space-x-2">
-                  <button
-                    onClick={addCategory}
-                    className="bg-vintage-green hover:bg-vintage-green/80 text-white px-4 py-2 rounded-lg transition-colors"
-                  >
-                    Сохранить
-                  </button>
-                  <button
-                    onClick={() => {
-                      setIsAdding(false)
-                      setNewCategory({ name: '', description: '' })
-                    }}
-                    className="bg-gray-600 hover:bg-gray-500 text-white px-4 py-2 rounded-lg transition-colors"
-                  >
-                    Отмена
-                  </button>
+              {isAdding && (
+                <div className="bg-vintage-charcoal p-3 sm:p-4 rounded-lg">
+                  <div className="space-y-3">
+                    <input
+                      type="text"
+                      placeholder="Название категории"
+                      value={newCategory.name}
+                      onChange={(e) => setNewCategory({ ...newCategory, name: e.target.value })}
+                      className="w-full bg-vintage-dark-gray text-white px-3 py-2 rounded-lg border border-vintage-medium-gray focus:border-vintage-green focus:outline-none text-sm sm:text-base"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Описание (необязательно)"
+                      value={newCategory.description}
+                      onChange={(e) => setNewCategory({ ...newCategory, description: e.target.value })}
+                      className="w-full bg-vintage-dark-gray text-white px-3 py-2 rounded-lg border border-vintage-medium-gray focus:border-vintage-green focus:outline-none text-sm sm:text-base"
+                    />
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={addCategory}
+                        className="bg-vintage-green hover:bg-vintage-green/80 text-white px-3 sm:px-4 py-2 rounded-lg transition-colors text-sm sm:text-base"
+                      >
+                        Сохранить
+                      </button>
+                      <button
+                        onClick={() => {
+                          setIsAdding(false)
+                          setNewCategory({ name: '', description: '' })
+                        }}
+                        className="bg-gray-600 hover:bg-gray-500 text-white px-3 sm:px-4 py-2 rounded-lg transition-colors text-sm sm:text-base"
+                      >
+                        Отмена
+                      </button>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
-          )}
-        </div>
+          </SortableContext>
+        </DndContext>
       )}
     </div>
   )
