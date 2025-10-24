@@ -118,6 +118,14 @@ export default function CategoryManager({ onDataChange }: CategoryManagerProps) 
   const handleDragStart = (event: any) => {
     console.log('Drag start:', event.active.id)
     setActiveId(event.active.id)
+    
+    // Если перетаскиваем блюдо, блокируем перетаскивание категорий
+    if (event.active.id.toString().startsWith('dish-')) {
+      // Отключаем перетаскивание категорий
+      document.querySelectorAll('[data-sortable-id^="category-"]').forEach(el => {
+        (el as HTMLElement).style.pointerEvents = 'none'
+      })
+    }
   }
 
   const handleDragEnd = (event: any) => {
@@ -125,14 +133,19 @@ export default function CategoryManager({ onDataChange }: CategoryManagerProps) 
     console.log('Drag end:', { active: active.id, over: over?.id })
     
     setActiveId(null)
+    
+    // Восстанавливаем pointerEvents для категорий
+    document.querySelectorAll('[data-sortable-id^="category-"]').forEach(el => {
+      (el as HTMLElement).style.pointerEvents = 'auto'
+    })
 
     if (!over) return
 
     const activeId = active.id
     const overId = over.id
 
-    // 1. Перетаскивание категорий между собой
-    if (activeId.toString().startsWith('category-') && overId.toString().startsWith('category-')) {
+    // 1. Перетаскивание категорий между собой (только если не перетаскиваем блюдо)
+    if (activeId.toString().startsWith('category-') && overId.toString().startsWith('category-') && !activeId.toString().startsWith('dish-')) {
       const activeCategoryId = parseInt(activeId.toString().replace('category-', ''))
       const overCategoryId = parseInt(overId.toString().replace('category-', ''))
       

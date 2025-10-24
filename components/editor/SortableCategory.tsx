@@ -82,6 +82,7 @@ export default function SortableCategory({ category, dishes, onDelete, onDataCha
     <div
       ref={setNodeRef}
       style={style}
+      data-sortable-id={`category-${category.id}`}
       className="bg-vintage-charcoal rounded-lg border border-vintage-medium-gray hover:border-vintage-green transition-colors"
     >
       {/* Заголовок категории */}
