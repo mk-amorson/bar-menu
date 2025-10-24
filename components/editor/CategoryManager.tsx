@@ -145,8 +145,45 @@ export default function CategoryManager({ onDataChange }: CategoryManagerProps) 
         updateCategoryOrder(newOrder)
       }
     }
+    
+    // Обрабатываем перетаскивание блюд между категориями
+    if (activeId.toString().startsWith('dish-') && overId.toString().startsWith('category-')) {
+      const dishId = parseInt(activeId.toString().replace('dish-', ''))
+      const categoryId = parseInt(overId.toString().replace('category-', ''))
+      
+      const dish = dishes.find(d => d.id === dishId)
+      if (dish && dish.category_id !== categoryId) {
+        console.log('Moving dish to category:', { dishId, categoryId })
+        updateDishCategory(dishId, categoryId)
+      }
+    }
   }
 
+  const updateDishCategory = async (dishId: number, categoryId: number) => {
+    // Сначала обновляем локальное состояние для мгновенной анимации
+    setDishes(prevDishes => 
+      prevDishes.map(dish => 
+        dish.id === dishId ? { ...dish, category_id: categoryId } : dish
+      )
+    )
+    
+    try {
+      const response = await fetch('/api/dishes/admin', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: dishId,
+          category_id: categoryId
+        })
+      })
+
+      if (response.ok) {
+        // Не вызываем onDataChange() чтобы избежать перезагрузки
+      }
+    } catch (error) {
+      console.error('Error updating dish category:', error)
+    }
+  }
 
   const getDishesForCategory = (categoryId: number) => {
     return dishes
@@ -181,7 +218,7 @@ export default function CategoryManager({ onDataChange }: CategoryManagerProps) 
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
         >
-          <SortableContext items={categories.map(c => `category-${c.id}`)} strategy={verticalListSortingStrategy}>
+          <SortableContext items={[...categories.map(c => `category-${c.id}`), ...dishes.map(d => `dish-${d.id}`)]} strategy={verticalListSortingStrategy}>
             <div className="space-y-3">
               {categories.map((category) => (
                 <SortableCategory

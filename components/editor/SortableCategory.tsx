@@ -137,6 +137,14 @@ export default function SortableCategory({ category, dishes, onDelete, onDataCha
           onDataChange={onDataChange}
           onUpdateDishes={onUpdateDishes}
         />
+        
+        {/* Drop zone для перетаскивания блюд из других категорий */}
+        <div 
+          className="mt-2 p-2 border-2 border-dashed border-vintage-medium-gray rounded-lg text-center text-vintage-light-gray text-sm opacity-50 hover:opacity-100 transition-opacity"
+          style={{ minHeight: '40px' }}
+        >
+          Перетащите блюдо сюда
+        </div>
 
         {/* Форма добавления блюда */}
         {isAddingDish && (
