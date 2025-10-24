@@ -205,13 +205,19 @@ export default function CategoryManager({ onDataChange }: CategoryManagerProps) 
       .filter(dish => dish.category_id === categoryId)
       .sort((a, b) => a.sort_order - b.sort_order)
     
+    console.log('Category dishes before move:', categoryDishes.map(d => ({ id: d.id, sort_order: d.sort_order })))
+    
     // Находим индексы
     const activeIndex = categoryDishes.findIndex(dish => dish.id === activeDishId)
     const overIndex = categoryDishes.findIndex(dish => dish.id === overDishId)
     
+    console.log('Move indices:', { activeIndex, overIndex, activeDishId, overDishId })
+    
     if (activeIndex !== overIndex) {
       // Создаем новый порядок
       const newOrder = arrayMove(categoryDishes, activeIndex, overIndex)
+      
+      console.log('New order:', newOrder.map(d => ({ id: d.id, sort_order: d.sort_order })))
       
       // Обновляем локальное состояние для мгновенной анимации
       setDishes(prevDishes => {
