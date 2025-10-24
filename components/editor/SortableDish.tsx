@@ -17,11 +17,7 @@ export default function SortableDish({ dishes, onOrderChange, onDataChange }: So
   const [editingDish, setEditingDish] = useState<DishWithCategory | null>(null)
 
   const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 3,
-      },
-    }),
+    useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     })
@@ -95,7 +91,6 @@ export default function SortableDish({ dishes, onOrderChange, onDataChange }: So
       sensors={sensors}
       collisionDetection={closestCenter}
       onDragEnd={handleDragEnd}
-      modifiers={[restrictToVerticalAxis]}
     >
       <SortableContext items={dishes.map(d => d.id)} strategy={verticalListSortingStrategy}>
         <div className="space-y-2">

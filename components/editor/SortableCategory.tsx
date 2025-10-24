@@ -32,8 +32,7 @@ export default function SortableCategory({ category, dishes, onDelete, onDataCha
     transition,
     isDragging,
   } = useSortable({ 
-    id: category.id,
-    disabled: isAddingDish
+    id: category.id
   })
 
   const style = {

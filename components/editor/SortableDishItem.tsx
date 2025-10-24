@@ -39,8 +39,7 @@ export default function SortableDishItem({
     transition,
     isDragging,
   } = useSortable({ 
-    id: dish.id,
-    disabled: isEditing
+    id: dish.id
   })
 
   const style = {

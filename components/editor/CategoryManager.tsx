@@ -19,11 +19,7 @@ export default function CategoryManager({ onDataChange }: CategoryManagerProps) 
   const [newCategory, setNewCategory] = useState({ name: '', description: '' })
 
   const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 3,
-      },
-    }),
+    useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     })
@@ -118,6 +114,10 @@ export default function CategoryManager({ onDataChange }: CategoryManagerProps) 
     }
   }
 
+  const handleDragStart = (event: any) => {
+    console.log('Drag start:', event.active.id)
+  }
+
   const handleDragEnd = (event: any) => {
     const { active, over } = event
     console.log('Drag end:', { active: active.id, over: over?.id })
@@ -160,8 +160,8 @@ export default function CategoryManager({ onDataChange }: CategoryManagerProps) 
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}
+          onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
-          modifiers={[restrictToVerticalAxis]}
         >
           <SortableContext items={categories.map(c => c.id)} strategy={verticalListSortingStrategy}>
             <div className="space-y-3">
