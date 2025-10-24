@@ -168,6 +168,7 @@ export default function SortableCategory({ category, dishes, onDelete, onDataCha
           dishes={dishes}
           onOrderChange={updateDishOrder}
           onDataChange={onDataChange}
+          onUpdateDishes={onUpdateDishes}
         />
 
         {/* Форма добавления блюда */}

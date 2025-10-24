@@ -11,9 +11,10 @@ interface SortableDishProps {
   dishes: DishWithCategory[]
   onOrderChange: (newOrder: DishWithCategory[]) => void
   onDataChange: () => void
+  onUpdateDishes: (updater: (dishes: DishWithCategory[]) => DishWithCategory[]) => void
 }
 
-export default function SortableDish({ dishes, onOrderChange, onDataChange }: SortableDishProps) {
+export default function SortableDish({ dishes, onOrderChange, onDataChange, onUpdateDishes }: SortableDishProps) {
   const [editingDish, setEditingDish] = useState<DishWithCategory | null>(null)
 
   const sensors = useSensors(
@@ -34,7 +35,16 @@ export default function SortableDish({ dishes, onOrderChange, onDataChange }: So
       const newOrder = arrayMove(dishes, oldIndex, newIndex)
       
       // Сначала обновляем локальное состояние для мгновенной анимации
-      onOrderChange(newOrder)
+      onUpdateDishes((prevDishes: DishWithCategory[]) => {
+        const updatedDishes = [...prevDishes]
+        newOrder.forEach((dish, index) => {
+          const dishIndex = updatedDishes.findIndex(d => d.id === dish.id)
+          if (dishIndex !== -1) {
+            updatedDishes[dishIndex] = { ...updatedDishes[dishIndex], sort_order: index }
+          }
+        })
+        return updatedDishes
+      })
       
       // Затем обновляем в базе данных
       updateDishOrderInDB(newOrder)
