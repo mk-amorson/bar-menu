@@ -21,7 +21,7 @@ export default function CategoryManager({ onDataChange }: CategoryManagerProps) 
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 8,
+        distance: 3,
       },
     }),
     useSensor(KeyboardSensor, {
@@ -120,11 +120,13 @@ export default function CategoryManager({ onDataChange }: CategoryManagerProps) 
 
   const handleDragEnd = (event: any) => {
     const { active, over } = event
+    console.log('Drag end:', { active: active.id, over: over?.id })
 
     if (active.id !== over.id) {
       const oldIndex = categories.findIndex(category => category.id === active.id)
       const newIndex = categories.findIndex(category => category.id === over.id)
       
+      console.log('Moving category:', { oldIndex, newIndex })
       const newOrder = arrayMove(categories, oldIndex, newIndex)
       updateCategoryOrder(newOrder)
     }

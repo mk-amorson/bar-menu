@@ -19,7 +19,7 @@ export default function SortableDish({ dishes, onOrderChange, onDataChange }: So
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 8,
+        distance: 3,
       },
     }),
     useSensor(KeyboardSensor, {
@@ -81,24 +81,6 @@ export default function SortableDish({ dishes, onOrderChange, onDataChange }: So
     }
   }
 
-  const toggleDishStatus = async (dish: DishWithCategory, field: 'is_new' | 'is_available') => {
-    try {
-      const response = await fetch('/api/dishes/admin', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id: dish.id,
-          [field]: !dish[field]
-        })
-      })
-
-      if (response.ok) {
-        onDataChange()
-      }
-    } catch (error) {
-      console.error('Error updating dish status:', error)
-    }
-  }
 
   if (dishes.length === 0) {
     return (
@@ -126,7 +108,6 @@ export default function SortableDish({ dishes, onOrderChange, onDataChange }: So
               onSave={updateDish}
               onCancel={() => setEditingDish(null)}
               onDelete={deleteDish}
-              onToggleStatus={toggleDishStatus}
             />
           ))}
         </div>

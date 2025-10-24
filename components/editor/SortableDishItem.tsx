@@ -12,7 +12,6 @@ interface SortableDishItemProps {
   onSave: (dish: DishWithCategory) => void
   onCancel: () => void
   onDelete: (id: number) => void
-  onToggleStatus: (dish: DishWithCategory, field: 'is_new' | 'is_available') => void
 }
 
 export default function SortableDishItem({ 
@@ -21,8 +20,7 @@ export default function SortableDishItem({
   onEdit, 
   onSave, 
   onCancel, 
-  onDelete, 
-  onToggleStatus 
+  onDelete
 }: SortableDishItemProps) {
   const [editData, setEditData] = useState({
     name: dish.name,
@@ -165,30 +163,6 @@ export default function SortableDishItem({
           </div>
           
           <div className="flex items-center space-x-1 sm:space-x-2 ml-2">
-            <button
-              onClick={() => onToggleStatus(dish, 'is_new')}
-              className={`px-2 py-1 rounded text-xs transition-colors ${
-                dish.is_new 
-                  ? 'bg-vintage-green text-white' 
-                  : 'bg-gray-600 text-gray-300'
-              }`}
-              title="Переключить NEW"
-            >
-              NEW
-            </button>
-            
-            <button
-              onClick={() => onToggleStatus(dish, 'is_available')}
-              className={`px-2 py-1 rounded text-xs transition-colors ${
-                dish.is_available 
-                  ? 'bg-green-600 text-white' 
-                  : 'bg-red-600 text-white'
-              }`}
-              title="Переключить наличие"
-            >
-              {dish.is_available ? 'В наличии' : 'Нет'}
-            </button>
-            
             <button
               onClick={onEdit}
               className="text-blue-400 hover:text-blue-300 transition-colors p-1"
