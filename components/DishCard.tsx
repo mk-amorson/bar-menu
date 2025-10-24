@@ -30,7 +30,7 @@ export default function DishCard({ dish }: DishCardProps) {
         <div className="flex items-start justify-between mb-2">
           <h3 className="text-white font-bold text-lg leading-tight">{dish.name}</h3>
           {dish.is_new && (
-            <span className="bg-vintage-green text-white text-xs font-bold px-2 py-1 rounded-full ml-2 flex-shrink-0">
+            <span className="bg-vintage-green text-white text-[10px] font-bold px-1.5 pt-0.5 rounded-full ml-2 flex-shrink-0 -mt-0.5">
               NEW
             </span>
           )}
@@ -38,14 +38,14 @@ export default function DishCard({ dish }: DishCardProps) {
 
         {/* Описание */}
         {dish.description && (
-          <p className="text-vintage-light-gray text-sm mb-3 line-clamp-3">
+          <p className="text-gray-300 text-sm mb-3 line-clamp-3">
             {dish.description}
           </p>
         )}
 
         {/* Цена */}
         <div className="flex items-center justify-between">
-          <span className="text-vintage-green font-bold text-xl">
+          <span className="text-green-400 font-bold text-xl">
             {dish.price.toLocaleString('ru-RU')} ₽
           </span>
         </div>

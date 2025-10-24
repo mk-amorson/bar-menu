@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { DishWithCategory } from '@/types/dishes'
+import { uploadImage, validateImageFile } from '@/lib/storage'
 
 interface SortableDishItemProps {
   dish: DishWithCategory
@@ -30,6 +31,8 @@ export default function SortableDishItem({
     is_new: dish.is_new,
     is_available: dish.is_available
   })
+  const [isUploading, setIsUploading] = useState(false)
+  const [previewUrl, setPreviewUrl] = useState<string | null>(dish.image_url || null)
 
   const {
     attributes,
@@ -61,6 +64,41 @@ export default function SortableDishItem({
     onSave(updatedDish)
   }
 
+  const handleFileUpload = async (file: File) => {
+    const validation = validateImageFile(file)
+    if (!validation.isValid) {
+      alert(validation.error || 'Ошибка валидации файла')
+      return
+    }
+
+    setIsUploading(true)
+    try {
+      // Создаем превью
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        setPreviewUrl(e.target?.result as string)
+      }
+      reader.readAsDataURL(file)
+
+      // Загружаем файл
+      const uploadedUrl = await uploadImage(file)
+      
+      if (uploadedUrl) {
+        setEditData({ ...editData, image_url: uploadedUrl })
+        setPreviewUrl(uploadedUrl)
+      } else {
+        alert('Ошибка загрузки файла')
+        setPreviewUrl(editData.image_url || null)
+      }
+    } catch (error) {
+      console.error('Upload error:', error)
+      alert('Ошибка загрузки файла')
+      setPreviewUrl(editData.image_url || null)
+    } finally {
+      setIsUploading(false)
+    }
+  }
+
   const borderColor = dish.is_available ? 'border-green-500' : 'border-red-500'
 
   return (
@@ -85,19 +123,98 @@ export default function SortableDishItem({
             className="w-full bg-vintage-black text-white px-2 sm:px-3 py-1 sm:py-2 rounded border border-vintage-medium-gray focus:border-vintage-green focus:outline-none h-16 sm:h-20 resize-none text-xs sm:text-sm"
           />
 
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 gap-2">
             <input
               type="number"
               value={editData.price}
               onChange={(e) => setEditData({ ...editData, price: e.target.value })}
               className="bg-vintage-black text-white px-2 sm:px-3 py-1 sm:py-2 rounded border border-vintage-medium-gray focus:border-vintage-green focus:outline-none text-xs sm:text-sm"
+              placeholder="Цена"
             />
-            <input
-              type="url"
-              value={editData.image_url}
-              onChange={(e) => setEditData({ ...editData, image_url: e.target.value })}
-              className="bg-vintage-black text-white px-2 sm:px-3 py-1 sm:py-2 rounded border border-vintage-medium-gray focus:border-vintage-green focus:outline-none text-xs sm:text-sm"
-            />
+            <div className="space-y-2">
+              <label className="block text-white text-xs sm:text-sm font-medium">
+                Изображение блюда
+              </label>
+              
+              {/* Превью изображения */}
+              {previewUrl && (
+                <div className="relative">
+                  <img
+                    src={previewUrl}
+                    alt="Превью"
+                    className="w-full h-24 object-cover rounded border border-vintage-medium-gray"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPreviewUrl(null)
+                      setEditData({ ...editData, image_url: '' })
+                    }}
+                    className="absolute top-1 right-1 bg-red-500 hover:bg-red-600 text-white rounded-full p-1 transition-colors"
+                    disabled={isUploading}
+                  >
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              )}
+              
+              {/* Кнопка загрузки */}
+              <div className="flex items-center space-x-2">
+                <input
+                  type="file"
+                  accept="image/jpeg,image/jpg,image/png,image/webp"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0]
+                    if (file) {
+                      handleFileUpload(file)
+                    }
+                  }}
+                  className="hidden"
+                  id="image-upload"
+                  disabled={isUploading}
+                />
+                
+                <button
+                  type="button"
+                  onClick={() => document.getElementById('image-upload')?.click()}
+                  disabled={isUploading}
+                  className="bg-vintage-green hover:bg-vintage-green/80 disabled:bg-gray-600 text-white px-3 py-2 rounded transition-colors text-xs sm:text-sm flex items-center space-x-2"
+                >
+                  {isUploading ? (
+                    <>
+                      <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      <span>Загрузка...</span>
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                      </svg>
+                      <span>Загрузить фото</span>
+                    </>
+                  )}
+                </button>
+
+                <div className="flex-1">
+                  <input
+                    type="url"
+                    placeholder="Или введите URL изображения"
+                    value={editData.image_url}
+                    onChange={(e) => {
+                      setEditData({ ...editData, image_url: e.target.value })
+                      setPreviewUrl(e.target.value || null)
+                    }}
+                    className="w-full bg-vintage-black text-white px-2 sm:px-3 py-1 sm:py-2 rounded border border-vintage-medium-gray focus:border-vintage-green focus:outline-none text-xs sm:text-sm"
+                    disabled={isUploading}
+                  />
+                </div>
+              </div>
+            </div>
           </div>
 
           <div className="flex items-center space-x-3 sm:space-x-4">
@@ -153,10 +270,15 @@ export default function SortableDishItem({
             </div>
             
             <div className="flex-1 min-w-0">
-              <div className="flex items-center space-x-2">
-                <h4 className="text-white font-medium text-sm sm:text-base truncate">{dish.name}</h4>
+              <div className="flex items-start space-x-2">
+                <h4 
+                  className="text-white font-medium text-sm sm:text-base truncate cursor-help" 
+                  title={dish.name.length > 30 ? dish.name : undefined}
+                >
+                  {dish.name}
+                </h4>
                 {dish.is_new && (
-                  <span className="bg-vintage-green text-white text-xs px-1 sm:px-2 py-0.5 sm:py-1 rounded-full whitespace-nowrap">
+                  <span className="bg-vintage-green text-white text-[8px] sm:text-[9px] px-1 pt-0.5 rounded-full whitespace-nowrap -mt-0.5 sm:-mt-0.5">
                     NEW
                   </span>
                 )}
@@ -165,7 +287,12 @@ export default function SortableDishItem({
                 {dish.price.toLocaleString('ru-RU')} ₽
               </p>
               {dish.description && (
-                <p className="text-vintage-light-gray text-xs truncate">{dish.description}</p>
+                <p 
+                  className="text-vintage-light-gray text-xs truncate cursor-help" 
+                  title={dish.description.length > 25 ? dish.description : undefined}
+                >
+                  {dish.description.length > 25 ? `${dish.description.substring(0, 25)}...` : dish.description}
+                </p>
               )}
             </div>
           </div>
