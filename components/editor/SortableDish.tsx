@@ -11,10 +11,9 @@ interface SortableDishProps {
   dishes: DishWithCategory[]
   onOrderChange: (newOrder: DishWithCategory[]) => void
   onDataChange: () => void
-  onUpdateDishes: (updater: (dishes: DishWithCategory[]) => DishWithCategory[]) => void
 }
 
-export default function SortableDish({ dishes, onOrderChange, onDataChange, onUpdateDishes }: SortableDishProps) {
+export default function SortableDish({ dishes, onOrderChange, onDataChange }: SortableDishProps) {
   const [editingDish, setEditingDish] = useState<DishWithCategory | null>(null)
 
   const sensors = useSensors(
@@ -34,45 +33,11 @@ export default function SortableDish({ dishes, onOrderChange, onDataChange, onUp
       console.log('Moving dish:', { oldIndex, newIndex })
       const newOrder = arrayMove(dishes, oldIndex, newIndex)
       
-      // Сначала обновляем локальное состояние для мгновенной анимации
-      onUpdateDishes((prevDishes: DishWithCategory[]) => {
-        const updatedDishes = [...prevDishes]
-        newOrder.forEach((dish, index) => {
-          const dishIndex = updatedDishes.findIndex(d => d.id === dish.id)
-          if (dishIndex !== -1) {
-            updatedDishes[dishIndex] = { ...updatedDishes[dishIndex], sort_order: index }
-          }
-        })
-        return updatedDishes
-      })
-      
-      // Затем обновляем в базе данных
-      updateDishOrderInDB(newOrder)
+      // Передаем управление в SortableCategory через onOrderChange
+      onOrderChange(newOrder)
     }
   }
 
-  const updateDishOrderInDB = async (newOrder: DishWithCategory[]) => {
-    try {
-      const updates = newOrder.map((dish, index) => ({
-        id: dish.id,
-        sort_order: index
-      }))
-
-      await Promise.all(
-        updates.map(update =>
-          fetch('/api/dishes/admin', {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(update)
-          })
-        )
-      )
-      
-      // Не вызываем onDataChange() чтобы избежать перезагрузки
-    } catch (error) {
-      console.error('Error updating dish order:', error)
-    }
-  }
 
   const updateDish = async (dish: DishWithCategory) => {
     try {
