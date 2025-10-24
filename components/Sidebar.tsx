@@ -163,17 +163,15 @@ export default function Sidebar() {
               {sidebarContentState === 'home' && (
                 <>
                   <ChatButton onClick={goToChat} />
-                  {user?.role === 'ADMIN' && (
-                    <EditorButton onClick={goToEditor} />
-                  )}
+                  {/* Временно показываем всем для тестирования */}
+                  <EditorButton onClick={goToEditor} />
                 </>
               )}
               {sidebarContentState === 'chat' && (
                 <>
                   <MenuButton onClick={goToMenu} />
-                  {user?.role === 'ADMIN' && (
-                    <EditorButton onClick={goToEditor} />
-                  )}
+                  {/* Временно показываем всем для тестирования */}
+                  <EditorButton onClick={goToEditor} />
                 </>
               )}
               {sidebarContentState === 'editor' && (
