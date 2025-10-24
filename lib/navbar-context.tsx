@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, ReactNode } from 'react'
 
-type NavbarState = 'home' | 'sidebar' | 'chat'
+type NavbarState = 'home' | 'sidebar' | 'chat' | 'editor'
 
 interface NavbarContextType {
   navbarState: NavbarState

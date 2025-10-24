@@ -6,6 +6,7 @@ import { useNavbar } from '@/lib/navbar-context'
 import { useUser } from '@/lib/user-context'
 import ChatButton from '@/components/sidebar/ChatButton'
 import MenuButton from '@/components/sidebar/MenuButton'
+import EditorButton from '@/components/sidebar/EditorButton'
 import TelegramWidget from '@/components/sidebar/TelegramWidget'
 import UserProfile from '@/components/sidebar/UserProfile'
 
@@ -70,7 +71,7 @@ export default function Sidebar() {
   }
 
   // Единая функция для всех переходов между страницами
-  const navigateToPage = (newState: 'home' | 'chat', newPath: string) => {
+  const navigateToPage = (newState: 'home' | 'chat' | 'editor', newPath: string) => {
     // Одновременно запускаем все анимации: закрытие меню, fade-out контента и смену надписи
     setIsSidebarOpen(false)
     setIsPageTransitioning(true)
@@ -93,6 +94,10 @@ export default function Sidebar() {
 
   const goToMenu = () => {
     navigateToPage('home', '/')
+  }
+
+  const goToEditor = () => {
+    navigateToPage('editor', '/editor')
   }
 
   // Обновляем содержимое бокового меню при изменении navbarState
@@ -156,10 +161,26 @@ export default function Sidebar() {
           <div className="flex-1 p-6">
             <div className="space-y-4">
               {sidebarContentState === 'home' && (
-                <ChatButton onClick={goToChat} />
+                <>
+                  <ChatButton onClick={goToChat} />
+                  {user?.role === 'ADMIN' && (
+                    <EditorButton onClick={goToEditor} />
+                  )}
+                </>
               )}
               {sidebarContentState === 'chat' && (
-                <MenuButton onClick={goToMenu} />
+                <>
+                  <MenuButton onClick={goToMenu} />
+                  {user?.role === 'ADMIN' && (
+                    <EditorButton onClick={goToEditor} />
+                  )}
+                </>
+              )}
+              {sidebarContentState === 'editor' && (
+                <>
+                  <MenuButton onClick={goToMenu} />
+                  <ChatButton onClick={goToChat} />
+                </>
               )}
             </div>
           </div>

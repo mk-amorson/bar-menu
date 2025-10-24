@@ -19,9 +19,8 @@ export default function Home() {
       {/* Основной контент */}
       <div className="h-full flex items-center justify-center">
         <div className="text-center">
-          {/* Контент главной страницы */}
-          <h1 className="text-white text-2xl">Главная страница</h1>
-          <p className="text-gray-400 mt-4">Нажмите на кнопку чата в боковом меню</p>
+          {/* Здесь будут карточки блюд */}
+          <p className="text-gray-400">Меню загружается...</p>
         </div>
       </div>
     </div>

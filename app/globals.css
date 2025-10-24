@@ -17,7 +17,7 @@ code {
     monospace;
 }
 
-/* Скрытие полос прокрутки для всех элементов */
+/* Скрытие полос прокрутки для всех элементов, кроме чата */
 * {
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* Internet Explorer 10+ */
@@ -25,6 +25,35 @@ code {
 
 *::-webkit-scrollbar {
   display: none; /* WebKit */
+}
+
+/* Исключение для чата - разрешаем скролл */
+.chat-messages-container,
+.chat-messages-container * {
+  scrollbar-width: thin; /* Firefox */
+  -ms-overflow-style: auto; /* Internet Explorer 10+ */
+}
+
+.chat-messages-container::-webkit-scrollbar,
+.chat-messages-container *::-webkit-scrollbar {
+  display: block; /* WebKit */
+  width: 6px;
+}
+
+.chat-messages-container::-webkit-scrollbar-track,
+.chat-messages-container *::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chat-messages-container::-webkit-scrollbar-thumb,
+.chat-messages-container *::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+}
+
+.chat-messages-container::-webkit-scrollbar-thumb:hover,
+.chat-messages-container *::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
 }
 
 /* Альтернативный способ для конкретных элементов */
@@ -82,4 +111,26 @@ button[onclick*="onLogout"] {
   z-index: 9999 !important;
   position: relative !important;
   cursor: pointer !important;
+}
+
+/* Улучшенный скролл для мобильных устройств */
+.overflow-y-auto {
+  -webkit-overflow-scrolling: touch; /* iOS smooth scrolling */
+  overscroll-behavior: contain; /* Prevent scroll chaining */
+}
+
+/* Фикс для скролла в чате */
+.chat-messages-container {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  scroll-behavior: smooth;
+  overflow-y: auto !important;
+  height: 100% !important;
+  min-height: 0 !important;
+}
+
+/* Дополнительные стили для принудительного скролла */
+.overflow-y-auto {
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
 }

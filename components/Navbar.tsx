@@ -58,6 +58,10 @@ export default function Navbar() {
             <h2 className={`text-xl font-semibold text-white transition-all duration-300 absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 ${navbarState === 'chat' ? 'opacity-100 delay-150' : 'opacity-0'}`}>
               Chat
             </h2>
+            {/* Editor */}
+            <h2 className={`text-xl font-semibold text-white transition-all duration-300 absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 ${navbarState === 'editor' ? 'opacity-100 delay-150' : 'opacity-0'}`}>
+              Редактор
+            </h2>
           </div>
         </div>
         

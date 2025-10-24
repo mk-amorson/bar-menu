@@ -16,7 +16,7 @@ export async function GET() {
           role
         )
       `)
-      .order('created_at', { ascending: true })
+      .order('created_at', { ascending: false })
       .limit(50)
 
     if (error) {

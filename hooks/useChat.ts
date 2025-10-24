@@ -7,11 +7,24 @@ export function useChat() {
   const [newMessage, setNewMessage] = useState('')
   const [isSending, setIsSending] = useState(false)
   const [isLoadingMessages, setIsLoadingMessages] = useState(true)
+  const [isUserScrolling, setIsUserScrolling] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const { user } = useUser()
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+    if (messagesEndRef.current) {
+      // Ищем контейнер с классом chat-messages-container
+      const container = messagesEndRef.current.closest('.chat-messages-container')
+      if (container) {
+        // Проверяем, находимся ли мы уже внизу (с небольшим допуском)
+        const isAtBottom = container.scrollTop + container.clientHeight >= container.scrollHeight - 10
+        
+        // Скроллим только если мы уже внизу или это первая загрузка
+        if (isAtBottom || messages.length <= 1) {
+          container.scrollTop = container.scrollHeight
+        }
+      }
+    }
   }
 
   const loadMessages = async () => {
@@ -74,7 +87,9 @@ export function useChat() {
 
   // Автоскролл к последнему сообщению
   useEffect(() => {
-    scrollToBottom()
+    setTimeout(() => {
+      scrollToBottom()
+    }, 100)
   }, [messages])
 
   return {
