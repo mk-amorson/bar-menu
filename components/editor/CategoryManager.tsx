@@ -131,124 +131,22 @@ export default function CategoryManager({ onDataChange }: CategoryManagerProps) 
     const activeId = active.id
     const overId = over.id
 
-    // Если перетаскиваем категорию (только если не перетаскиваем блюдо)
+    // Обрабатываем только категории в этом DndContext
     if (activeId.toString().startsWith('category-') && overId.toString().startsWith('category-')) {
-      // Проверяем, что мы не перетаскиваем блюдо
-      if (!activeId.toString().startsWith('dish-')) {
-        const activeCategoryId = parseInt(activeId.toString().replace('category-', ''))
-        const overCategoryId = parseInt(overId.toString().replace('category-', ''))
-        
-        const oldIndex = categories.findIndex(category => category.id === activeCategoryId)
-        const newIndex = categories.findIndex(category => category.id === overCategoryId)
-        
-        if (oldIndex !== newIndex) {
-          console.log('Moving category:', { oldIndex, newIndex })
-          const newOrder = arrayMove(categories, oldIndex, newIndex)
-          updateCategoryOrder(newOrder)
-        }
-      }
-    }
-    
-    // Если перетаскиваем блюдо на категорию
-    if (activeId.toString().startsWith('dish-') && overId.toString().startsWith('category-')) {
-      const dishId = parseInt(activeId.toString().replace('dish-', ''))
-      const categoryId = parseInt(overId.toString().replace('category-', ''))
+      const activeCategoryId = parseInt(activeId.toString().replace('category-', ''))
+      const overCategoryId = parseInt(overId.toString().replace('category-', ''))
       
-      const dish = dishes.find(d => d.id === dishId)
-      if (dish && dish.category_id !== categoryId) {
-        console.log('Moving dish to category:', { dishId, categoryId })
-        updateDishCategory(dishId, categoryId)
-      }
-    }
-    
-    // Если перетаскиваем блюдо на другое блюдо (внутри категории)
-    if (activeId.toString().startsWith('dish-') && overId.toString().startsWith('dish-')) {
-      const activeDishId = parseInt(activeId.toString().replace('dish-', ''))
-      const overDishId = parseInt(overId.toString().replace('dish-', ''))
+      const oldIndex = categories.findIndex(category => category.id === activeCategoryId)
+      const newIndex = categories.findIndex(category => category.id === overCategoryId)
       
-      const activeDish = dishes.find(d => d.id === activeDishId)
-      const overDish = dishes.find(d => d.id === overDishId)
-      
-      if (activeDish && overDish && activeDish.category_id === overDish.category_id) {
-        console.log('Moving dish within category:', { activeDishId, overDishId })
-        updateDishOrderWithinCategory(activeDish.category_id, activeDishId, overDishId)
+      if (oldIndex !== newIndex) {
+        console.log('Moving category:', { oldIndex, newIndex })
+        const newOrder = arrayMove(categories, oldIndex, newIndex)
+        updateCategoryOrder(newOrder)
       }
     }
   }
 
-  const updateDishCategory = async (dishId: number, categoryId: number) => {
-    // Сначала обновляем локальное состояние для мгновенной анимации
-    setDishes(prevDishes => 
-      prevDishes.map(dish => 
-        dish.id === dishId ? { ...dish, category_id: categoryId } : dish
-      )
-    )
-    
-    try {
-      const response = await fetch('/api/dishes/admin', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id: dishId,
-          category_id: categoryId
-        })
-      })
-
-      if (response.ok) {
-        // Не вызываем onDataChange() чтобы избежать перезагрузки
-      }
-    } catch (error) {
-      console.error('Error updating dish category:', error)
-    }
-  }
-
-  const updateDishOrderWithinCategory = async (categoryId: number, activeDishId: number, overDishId: number) => {
-    // Получаем все блюда этой категории с правильной сортировкой
-    const categoryDishes = dishes
-      .filter(dish => dish.category_id === categoryId)
-      .sort((a, b) => a.sort_order - b.sort_order)
-    
-    // Находим индексы
-    const activeIndex = categoryDishes.findIndex(dish => dish.id === activeDishId)
-    const overIndex = categoryDishes.findIndex(dish => dish.id === overDishId)
-    
-    if (activeIndex !== overIndex) {
-      // Создаем новый порядок
-      const newOrder = arrayMove(categoryDishes, activeIndex, overIndex)
-      
-      // Обновляем локальное состояние для мгновенной анимации
-      setDishes(prevDishes => {
-        const updatedDishes = [...prevDishes]
-        newOrder.forEach((dish, index) => {
-          const dishIndex = updatedDishes.findIndex(d => d.id === dish.id)
-          if (dishIndex !== -1) {
-            updatedDishes[dishIndex] = { ...updatedDishes[dishIndex], sort_order: index }
-          }
-        })
-        return updatedDishes
-      })
-      
-      // Сохраняем в базе данных
-      try {
-        const updates = newOrder.map((dish, index) => ({
-          id: dish.id,
-          sort_order: index
-        }))
-
-        await Promise.all(
-          updates.map(update =>
-            fetch('/api/dishes/admin', {
-              method: 'PUT',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(update)
-            })
-          )
-        )
-      } catch (error) {
-        console.error('Error updating dish order:', error)
-      }
-    }
-  }
 
   const getDishesForCategory = (categoryId: number) => {
     return dishes
@@ -283,7 +181,7 @@ export default function CategoryManager({ onDataChange }: CategoryManagerProps) 
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
         >
-          <SortableContext items={[...categories.map(c => `category-${c.id}`), ...dishes.map(d => `dish-${d.id}`)]} strategy={verticalListSortingStrategy}>
+          <SortableContext items={categories.map(c => `category-${c.id}`)} strategy={verticalListSortingStrategy}>
             <div className="space-y-3">
               {categories.map((category) => (
                 <SortableCategory
