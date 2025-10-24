@@ -227,6 +227,7 @@ export default function CategoryManager({ onDataChange }: CategoryManagerProps) 
                   dishes={getDishesForCategory(category.id)}
                   onDelete={deleteCategory}
                   onDataChange={onDataChange}
+                  onUpdateDishes={setDishes}
                 />
               ))}
 

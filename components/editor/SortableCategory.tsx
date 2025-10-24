@@ -11,9 +11,10 @@ interface SortableCategoryProps {
   dishes: DishWithCategory[]
   onDelete: (id: number) => void
   onDataChange: () => void
+  onUpdateDishes: (updater: (dishes: DishWithCategory[]) => DishWithCategory[]) => void
 }
 
-export default function SortableCategory({ category, dishes, onDelete, onDataChange }: SortableCategoryProps) {
+export default function SortableCategory({ category, dishes, onDelete, onDataChange, onUpdateDishes }: SortableCategoryProps) {
   const [isAddingDish, setIsAddingDish] = useState(false)
   const [newDish, setNewDish] = useState({
     name: '',
@@ -78,6 +79,18 @@ export default function SortableCategory({ category, dishes, onDelete, onDataCha
   }
 
   const updateDishOrder = async (newOrder: DishWithCategory[]) => {
+    // Сначала обновляем локальное состояние для мгновенной анимации
+    onUpdateDishes((prevDishes: DishWithCategory[]) => {
+      const updatedDishes = [...prevDishes]
+      newOrder.forEach((dish, index) => {
+        const dishIndex = updatedDishes.findIndex(d => d.id === dish.id)
+        if (dishIndex !== -1) {
+          updatedDishes[dishIndex] = { ...updatedDishes[dishIndex], sort_order: index }
+        }
+      })
+      return updatedDishes
+    })
+    
     try {
       const updates = newOrder.map((dish, index) => ({
         id: dish.id,
