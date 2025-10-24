@@ -32,13 +32,13 @@ export default function SortableCategory({ category, dishes, onDelete, onDataCha
     transition,
     isDragging,
   } = useSortable({ 
-    id: category.id
+    id: `category-${category.id}`
   })
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.5 : 1,
+    opacity: isDragging ? 0.3 : 1,
   }
 
   const addDish = async () => {
@@ -107,18 +107,27 @@ export default function SortableCategory({ category, dishes, onDelete, onDataCha
       {/* Заголовок категории */}
       <div className="p-3 sm:p-4 border-b border-vintage-medium-gray">
         <div className="flex items-center justify-between">
-          <div 
-            className="flex-1 cursor-grab active:cursor-grabbing select-none"
-            {...attributes}
-            {...listeners}
-          >
-            <h3 className="text-white font-medium text-sm sm:text-base">{category.name}</h3>
-            {category.description && (
-              <p className="text-vintage-light-gray text-xs sm:text-sm mt-1">{category.description}</p>
-            )}
-            <p className="text-vintage-light-gray text-xs mt-1">
-              Блюд: {dishes.length}
-            </p>
+          <div className="flex items-center space-x-3">
+            {/* Полоски для перетаскивания */}
+            <div 
+              className="flex flex-col space-y-1 cursor-grab active:cursor-grabbing select-none"
+              {...attributes}
+              {...listeners}
+            >
+              <div className="w-1 h-1 bg-vintage-light-gray rounded-full"></div>
+              <div className="w-1 h-1 bg-vintage-light-gray rounded-full"></div>
+              <div className="w-1 h-1 bg-vintage-light-gray rounded-full"></div>
+            </div>
+            
+            <div className="flex-1">
+              <h3 className="text-white font-medium text-sm sm:text-base">{category.name}</h3>
+              {category.description && (
+                <p className="text-vintage-light-gray text-xs sm:text-sm mt-1">{category.description}</p>
+              )}
+              <p className="text-vintage-light-gray text-xs mt-1">
+                Блюд: {dishes.length}
+              </p>
+            </div>
           </div>
           <div className="flex items-center space-x-2">
             <button

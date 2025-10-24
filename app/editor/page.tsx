@@ -5,7 +5,6 @@ import { useNavbar } from '@/lib/navbar-context'
 import { useUser } from '@/lib/user-context'
 import Sidebar from '@/components/Sidebar'
 import CategoryManager from '@/components/editor/CategoryManager'
-import TestDragDrop from '@/components/TestDragDrop'
 
 export default function EditorPage() {
   const { navbarState, setNavbarState } = useNavbar()
@@ -51,7 +50,6 @@ export default function EditorPage() {
 
             {/* Интерфейс редактора */}
             <div className="space-y-4 sm:space-y-6">
-              <TestDragDrop />
               <CategoryManager key={`categories-${refreshKey}`} onDataChange={handleDataChange} />
             </div>
           </div>

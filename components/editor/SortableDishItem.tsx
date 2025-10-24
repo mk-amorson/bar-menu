@@ -39,13 +39,13 @@ export default function SortableDishItem({
     transition,
     isDragging,
   } = useSortable({ 
-    id: dish.id
+    id: `dish-${dish.id}`
   })
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.5 : 1,
+    opacity: isDragging ? 0.3 : 1,
   }
 
   const handleSave = () => {
@@ -140,25 +140,34 @@ export default function SortableDishItem({
       ) : (
         // Режим просмотра
         <div className="flex items-center justify-between">
-          <div 
-            className="flex-1 min-w-0 cursor-grab active:cursor-grabbing select-none"
-            {...attributes}
-            {...listeners}
-          >
-            <div className="flex items-center space-x-2">
-              <h4 className="text-white font-medium text-sm sm:text-base truncate">{dish.name}</h4>
-              {dish.is_new && (
-                <span className="bg-vintage-green text-white text-xs px-1 sm:px-2 py-0.5 sm:py-1 rounded-full whitespace-nowrap">
-                  NEW
-                </span>
+          <div className="flex items-center space-x-3">
+            {/* Полоски для перетаскивания */}
+            <div 
+              className="flex flex-col space-y-1 cursor-grab active:cursor-grabbing select-none"
+              {...attributes}
+              {...listeners}
+            >
+              <div className="w-1 h-1 bg-vintage-light-gray rounded-full"></div>
+              <div className="w-1 h-1 bg-vintage-light-gray rounded-full"></div>
+              <div className="w-1 h-1 bg-vintage-light-gray rounded-full"></div>
+            </div>
+            
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center space-x-2">
+                <h4 className="text-white font-medium text-sm sm:text-base truncate">{dish.name}</h4>
+                {dish.is_new && (
+                  <span className="bg-vintage-green text-white text-xs px-1 sm:px-2 py-0.5 sm:py-1 rounded-full whitespace-nowrap">
+                    NEW
+                  </span>
+                )}
+              </div>
+              <p className="text-vintage-light-gray text-xs sm:text-sm truncate">
+                {dish.price.toLocaleString('ru-RU')} ₽
+              </p>
+              {dish.description && (
+                <p className="text-vintage-light-gray text-xs truncate">{dish.description}</p>
               )}
             </div>
-            <p className="text-vintage-light-gray text-xs sm:text-sm truncate">
-              {dish.price.toLocaleString('ru-RU')} ₽
-            </p>
-            {dish.description && (
-              <p className="text-vintage-light-gray text-xs truncate">{dish.description}</p>
-            )}
           </div>
           
           <div className="flex items-center space-x-1 sm:space-x-2 ml-2">

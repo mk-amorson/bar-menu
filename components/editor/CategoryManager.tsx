@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react'
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable'
-import { restrictToVerticalAxis } from '@dnd-kit/modifiers'
 import { DishCategory, DishWithCategory } from '@/types/dishes'
 import SortableCategory from './SortableCategory'
 
@@ -17,6 +16,7 @@ export default function CategoryManager({ onDataChange }: CategoryManagerProps) 
   const [isLoading, setIsLoading] = useState(true)
   const [isAdding, setIsAdding] = useState(false)
   const [newCategory, setNewCategory] = useState({ name: '', description: '' })
+  const [activeId, setActiveId] = useState<string | number | null>(null)
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -116,19 +116,82 @@ export default function CategoryManager({ onDataChange }: CategoryManagerProps) 
 
   const handleDragStart = (event: any) => {
     console.log('Drag start:', event.active.id)
+    setActiveId(event.active.id)
+  }
+
+  const handleDragOver = (event: any) => {
+    const { active, over } = event
+    
+    if (!over) return
+    
+    const activeId = active.id
+    const overId = over.id
+    
+    // Если перетаскиваем блюдо
+    if (activeId.toString().startsWith('dish-')) {
+      const dishId = parseInt(activeId.toString().replace('dish-', ''))
+      const dish = dishes.find(d => d.id === dishId)
+      
+      if (!dish) return
+      
+      // Если перетаскиваем на категорию
+      if (overId.toString().startsWith('category-')) {
+        const categoryId = parseInt(overId.toString().replace('category-', ''))
+        
+        if (dish.category_id !== categoryId) {
+          // Обновляем категорию блюда
+          updateDishCategory(dishId, categoryId)
+        }
+      }
+    }
   }
 
   const handleDragEnd = (event: any) => {
     const { active, over } = event
     console.log('Drag end:', { active: active.id, over: over?.id })
+    
+    setActiveId(null)
 
-    if (active.id !== over.id) {
-      const oldIndex = categories.findIndex(category => category.id === active.id)
-      const newIndex = categories.findIndex(category => category.id === over.id)
+    if (!over) return
+
+    const activeId = active.id
+    const overId = over.id
+
+    // Если перетаскиваем категорию
+    if (activeId.toString().startsWith('category-') && overId.toString().startsWith('category-')) {
+      const oldIndex = categories.findIndex(category => category.id === activeId)
+      const newIndex = categories.findIndex(category => category.id === overId)
       
-      console.log('Moving category:', { oldIndex, newIndex })
-      const newOrder = arrayMove(categories, oldIndex, newIndex)
-      updateCategoryOrder(newOrder)
+      if (oldIndex !== newIndex) {
+        console.log('Moving category:', { oldIndex, newIndex })
+        const newOrder = arrayMove(categories, oldIndex, newIndex)
+        updateCategoryOrder(newOrder)
+      }
+    }
+  }
+
+  const updateDishCategory = async (dishId: number, categoryId: number) => {
+    try {
+      const response = await fetch('/api/dishes/admin', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: dishId,
+          category_id: categoryId
+        })
+      })
+
+      if (response.ok) {
+        // Обновляем локальное состояние
+        setDishes(prevDishes => 
+          prevDishes.map(dish => 
+            dish.id === dishId ? { ...dish, category_id: categoryId } : dish
+          )
+        )
+        onDataChange()
+      }
+    } catch (error) {
+      console.error('Error updating dish category:', error)
     }
   }
 
@@ -161,9 +224,10 @@ export default function CategoryManager({ onDataChange }: CategoryManagerProps) 
           sensors={sensors}
           collisionDetection={closestCenter}
           onDragStart={handleDragStart}
+          onDragOver={handleDragOver}
           onDragEnd={handleDragEnd}
         >
-          <SortableContext items={categories.map(c => c.id)} strategy={verticalListSortingStrategy}>
+          <SortableContext items={categories.map(c => `category-${c.id}`)} strategy={verticalListSortingStrategy}>
             <div className="space-y-3">
               {categories.map((category) => (
                 <SortableCategory

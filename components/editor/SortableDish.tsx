@@ -27,8 +27,8 @@ export default function SortableDish({ dishes, onOrderChange, onDataChange }: So
     const { active, over } = event
 
     if (active.id !== over.id) {
-      const oldIndex = dishes.findIndex(dish => dish.id === active.id)
-      const newIndex = dishes.findIndex(dish => dish.id === over.id)
+      const oldIndex = dishes.findIndex(dish => `dish-${dish.id}` === active.id)
+      const newIndex = dishes.findIndex(dish => `dish-${dish.id}` === over.id)
       
       const newOrder = arrayMove(dishes, oldIndex, newIndex)
       onOrderChange(newOrder)
@@ -92,7 +92,7 @@ export default function SortableDish({ dishes, onOrderChange, onDataChange }: So
       collisionDetection={closestCenter}
       onDragEnd={handleDragEnd}
     >
-      <SortableContext items={dishes.map(d => d.id)} strategy={verticalListSortingStrategy}>
+      <SortableContext items={dishes.map(d => `dish-${d.id}`)} strategy={verticalListSortingStrategy}>
         <div className="space-y-2">
           {dishes.map((dish) => (
             <SortableDishItem
