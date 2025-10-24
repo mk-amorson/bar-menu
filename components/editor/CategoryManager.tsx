@@ -17,6 +17,7 @@ export default function CategoryManager({ onDataChange }: CategoryManagerProps) 
   const [isAdding, setIsAdding] = useState(false)
   const [newCategory, setNewCategory] = useState({ name: '', description: '' })
   const [activeId, setActiveId] = useState<string | number | null>(null)
+  const [isDraggingDish, setIsDraggingDish] = useState(false)
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -121,6 +122,7 @@ export default function CategoryManager({ onDataChange }: CategoryManagerProps) 
     
     // Если перетаскиваем блюдо, блокируем перетаскивание категорий
     if (event.active.id.toString().startsWith('dish-')) {
+      setIsDraggingDish(true)
       // Отключаем перетаскивание категорий
       document.querySelectorAll('[data-sortable-id^="category-"]').forEach(el => {
         (el as HTMLElement).style.pointerEvents = 'none'
@@ -133,6 +135,7 @@ export default function CategoryManager({ onDataChange }: CategoryManagerProps) 
     console.log('Drag end:', { active: active.id, over: over?.id })
     
     setActiveId(null)
+    setIsDraggingDish(false)
     
     // Восстанавливаем pointerEvents для категорий
     document.querySelectorAll('[data-sortable-id^="category-"]').forEach(el => {
@@ -296,7 +299,7 @@ export default function CategoryManager({ onDataChange }: CategoryManagerProps) 
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
         >
-          <SortableContext items={[...categories.map(c => `category-${c.id}`), ...dishes.map(d => `dish-${d.id}`)]} strategy={verticalListSortingStrategy}>
+          <SortableContext items={isDraggingDish ? [...dishes.map(d => `dish-${d.id}`)] : [...categories.map(c => `category-${c.id}`), ...dishes.map(d => `dish-${d.id}`)]} strategy={verticalListSortingStrategy}>
             <div className="space-y-3">
               {categories.map((category) => (
                 <SortableCategory
