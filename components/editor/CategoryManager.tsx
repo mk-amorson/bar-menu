@@ -92,6 +92,9 @@ export default function CategoryManager({ onDataChange }: CategoryManagerProps) 
   }
 
   const updateCategoryOrder = async (newOrder: DishCategory[]) => {
+    // Сначала обновляем локальное состояние для мгновенной анимации
+    setCategories(newOrder)
+    
     try {
       const updates = newOrder.map((category, index) => ({
         id: category.id,
@@ -108,7 +111,7 @@ export default function CategoryManager({ onDataChange }: CategoryManagerProps) 
         )
       )
 
-      setCategories(newOrder)
+      onDataChange()
     } catch (error) {
       console.error('Error updating category order:', error)
     }
@@ -117,33 +120,6 @@ export default function CategoryManager({ onDataChange }: CategoryManagerProps) 
   const handleDragStart = (event: any) => {
     console.log('Drag start:', event.active.id)
     setActiveId(event.active.id)
-  }
-
-  const handleDragOver = (event: any) => {
-    const { active, over } = event
-    
-    if (!over) return
-    
-    const activeId = active.id
-    const overId = over.id
-    
-    // Если перетаскиваем блюдо
-    if (activeId.toString().startsWith('dish-')) {
-      const dishId = parseInt(activeId.toString().replace('dish-', ''))
-      const dish = dishes.find(d => d.id === dishId)
-      
-      if (!dish) return
-      
-      // Если перетаскиваем на категорию
-      if (overId.toString().startsWith('category-')) {
-        const categoryId = parseInt(overId.toString().replace('category-', ''))
-        
-        if (dish.category_id !== categoryId) {
-          // Обновляем категорию блюда
-          updateDishCategory(dishId, categoryId)
-        }
-      }
-    }
   }
 
   const handleDragEnd = (event: any) => {
@@ -159,8 +135,11 @@ export default function CategoryManager({ onDataChange }: CategoryManagerProps) 
 
     // Если перетаскиваем категорию
     if (activeId.toString().startsWith('category-') && overId.toString().startsWith('category-')) {
-      const oldIndex = categories.findIndex(category => category.id === activeId)
-      const newIndex = categories.findIndex(category => category.id === overId)
+      const activeCategoryId = parseInt(activeId.toString().replace('category-', ''))
+      const overCategoryId = parseInt(overId.toString().replace('category-', ''))
+      
+      const oldIndex = categories.findIndex(category => category.id === activeCategoryId)
+      const newIndex = categories.findIndex(category => category.id === overCategoryId)
       
       if (oldIndex !== newIndex) {
         console.log('Moving category:', { oldIndex, newIndex })
@@ -168,9 +147,28 @@ export default function CategoryManager({ onDataChange }: CategoryManagerProps) 
         updateCategoryOrder(newOrder)
       }
     }
+    
+    // Если перетаскиваем блюдо на категорию
+    if (activeId.toString().startsWith('dish-') && overId.toString().startsWith('category-')) {
+      const dishId = parseInt(activeId.toString().replace('dish-', ''))
+      const categoryId = parseInt(overId.toString().replace('category-', ''))
+      
+      const dish = dishes.find(d => d.id === dishId)
+      if (dish && dish.category_id !== categoryId) {
+        console.log('Moving dish to category:', { dishId, categoryId })
+        updateDishCategory(dishId, categoryId)
+      }
+    }
   }
 
   const updateDishCategory = async (dishId: number, categoryId: number) => {
+    // Сначала обновляем локальное состояние для мгновенной анимации
+    setDishes(prevDishes => 
+      prevDishes.map(dish => 
+        dish.id === dishId ? { ...dish, category_id: categoryId } : dish
+      )
+    )
+    
     try {
       const response = await fetch('/api/dishes/admin', {
         method: 'PUT',
@@ -182,12 +180,6 @@ export default function CategoryManager({ onDataChange }: CategoryManagerProps) 
       })
 
       if (response.ok) {
-        // Обновляем локальное состояние
-        setDishes(prevDishes => 
-          prevDishes.map(dish => 
-            dish.id === dishId ? { ...dish, category_id: categoryId } : dish
-          )
-        )
         onDataChange()
       }
     } catch (error) {
@@ -224,7 +216,6 @@ export default function CategoryManager({ onDataChange }: CategoryManagerProps) 
           sensors={sensors}
           collisionDetection={closestCenter}
           onDragStart={handleDragStart}
-          onDragOver={handleDragOver}
           onDragEnd={handleDragEnd}
         >
           <SortableContext items={categories.map(c => `category-${c.id}`)} strategy={verticalListSortingStrategy}>

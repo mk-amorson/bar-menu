@@ -30,8 +30,37 @@ export default function SortableDish({ dishes, onOrderChange, onDataChange }: So
       const oldIndex = dishes.findIndex(dish => `dish-${dish.id}` === active.id)
       const newIndex = dishes.findIndex(dish => `dish-${dish.id}` === over.id)
       
+      console.log('Moving dish:', { oldIndex, newIndex })
       const newOrder = arrayMove(dishes, oldIndex, newIndex)
+      
+      // Сначала обновляем локальное состояние для мгновенной анимации
       onOrderChange(newOrder)
+      
+      // Затем обновляем в базе данных
+      updateDishOrderInDB(newOrder)
+    }
+  }
+
+  const updateDishOrderInDB = async (newOrder: DishWithCategory[]) => {
+    try {
+      const updates = newOrder.map((dish, index) => ({
+        id: dish.id,
+        sort_order: index
+      }))
+
+      await Promise.all(
+        updates.map(update =>
+          fetch('/api/dishes/admin', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(update)
+          })
+        )
+      )
+      
+      onDataChange() // Обновляем данные после сохранения в БД
+    } catch (error) {
+      console.error('Error updating dish order:', error)
     }
   }
 
