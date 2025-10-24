@@ -31,7 +31,10 @@ export default function SortableCategory({ category, dishes, onDelete, onDataCha
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: category.id })
+  } = useSortable({ 
+    id: category.id,
+    disabled: isAddingDish
+  })
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -100,14 +103,16 @@ export default function SortableCategory({ category, dishes, onDelete, onDataCha
     <div
       ref={setNodeRef}
       style={style}
-      {...attributes}
-      {...listeners}
-      className="bg-vintage-charcoal rounded-lg border border-vintage-medium-gray hover:border-vintage-green transition-colors cursor-grab active:cursor-grabbing"
+      className="bg-vintage-charcoal rounded-lg border border-vintage-medium-gray hover:border-vintage-green transition-colors"
     >
       {/* Заголовок категории */}
       <div className="p-3 sm:p-4 border-b border-vintage-medium-gray">
         <div className="flex items-center justify-between">
-          <div className="flex-1">
+          <div 
+            className="flex-1 cursor-grab active:cursor-grabbing select-none"
+            {...attributes}
+            {...listeners}
+          >
             <h3 className="text-white font-medium text-sm sm:text-base">{category.name}</h3>
             {category.description && (
               <p className="text-vintage-light-gray text-xs sm:text-sm mt-1">{category.description}</p>

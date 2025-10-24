@@ -134,3 +134,27 @@ button[onclick*="onLogout"] {
   overflow-y: auto !important;
   -webkit-overflow-scrolling: touch !important;
 }
+
+/* Стили для drag & drop */
+.select-none {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.cursor-grab {
+  cursor: grab;
+}
+
+.cursor-grab:active {
+  cursor: grabbing;
+}
+
+/* Отключение выделения текста при перетаскивании */
+[draggable="true"] {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}

@@ -40,7 +40,10 @@ export default function SortableDishItem({
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: dish.id })
+  } = useSortable({ 
+    id: dish.id,
+    disabled: isEditing
+  })
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -67,9 +70,7 @@ export default function SortableDishItem({
     <div
       ref={setNodeRef}
       style={style}
-      {...attributes}
-      {...listeners}
-      className={`bg-vintage-dark-gray rounded-lg border-2 ${borderColor} p-2 sm:p-3 cursor-grab active:cursor-grabbing transition-all hover:shadow-lg`}
+      className={`bg-vintage-dark-gray rounded-lg border-2 ${borderColor} p-2 sm:p-3 transition-all hover:shadow-lg`}
     >
       {isEditing ? (
         // Режим редактирования
@@ -142,7 +143,11 @@ export default function SortableDishItem({
       ) : (
         // Режим просмотра
         <div className="flex items-center justify-between">
-          <div className="flex-1 min-w-0">
+          <div 
+            className="flex-1 min-w-0 cursor-grab active:cursor-grabbing select-none"
+            {...attributes}
+            {...listeners}
+          >
             <div className="flex items-center space-x-2">
               <h4 className="text-white font-medium text-sm sm:text-base truncate">{dish.name}</h4>
               {dish.is_new && (

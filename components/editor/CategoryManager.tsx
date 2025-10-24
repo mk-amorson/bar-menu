@@ -19,7 +19,11 @@ export default function CategoryManager({ onDataChange }: CategoryManagerProps) 
   const [newCategory, setNewCategory] = useState({ name: '', description: '' })
 
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     })

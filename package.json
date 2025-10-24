@@ -10,6 +10,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@dnd-kit/modifiers": "^9.0.0",
     "@supabase/supabase-js": "^2.38.0",
     "crypto-js": "^4.2.0",
     "dotenv": "^17.2.3",
