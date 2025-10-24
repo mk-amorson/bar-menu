@@ -8,10 +8,9 @@ import SortableDishItem from './SortableDishItem'
 interface SortableDishProps {
   dishes: DishWithCategory[]
   onDataChange: () => void
-  onUpdateDishes: (updater: (dishes: DishWithCategory[]) => DishWithCategory[]) => void
 }
 
-export default function SortableDish({ dishes, onDataChange, onUpdateDishes }: SortableDishProps) {
+export default function SortableDish({ dishes, onDataChange }: SortableDishProps) {
   const [editingDish, setEditingDish] = useState<DishWithCategory | null>(null)
 
 

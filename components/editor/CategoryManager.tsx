@@ -131,7 +131,7 @@ export default function CategoryManager({ onDataChange }: CategoryManagerProps) 
     const activeId = active.id
     const overId = over.id
 
-    // Обрабатываем только категории в этом DndContext
+    // 1. Перетаскивание категорий между собой
     if (activeId.toString().startsWith('category-') && overId.toString().startsWith('category-')) {
       const activeCategoryId = parseInt(activeId.toString().replace('category-', ''))
       const overCategoryId = parseInt(overId.toString().replace('category-', ''))
@@ -144,9 +144,10 @@ export default function CategoryManager({ onDataChange }: CategoryManagerProps) 
         const newOrder = arrayMove(categories, oldIndex, newIndex)
         updateCategoryOrder(newOrder)
       }
+      return
     }
     
-    // Обрабатываем перетаскивание блюд между категориями
+    // 2. Перетаскивание блюд между категориями
     if (activeId.toString().startsWith('dish-') && overId.toString().startsWith('category-')) {
       const dishId = parseInt(activeId.toString().replace('dish-', ''))
       const categoryId = parseInt(overId.toString().replace('category-', ''))
@@ -156,9 +157,10 @@ export default function CategoryManager({ onDataChange }: CategoryManagerProps) 
         console.log('Moving dish to category:', { dishId, categoryId })
         updateDishCategory(dishId, categoryId)
       }
+      return
     }
     
-    // Обрабатываем перетаскивание блюд внутри категории
+    // 3. Перетаскивание блюд внутри категории
     if (activeId.toString().startsWith('dish-') && overId.toString().startsWith('dish-')) {
       const activeDishId = parseInt(activeId.toString().replace('dish-', ''))
       const overDishId = parseInt(overId.toString().replace('dish-', ''))
@@ -170,6 +172,7 @@ export default function CategoryManager({ onDataChange }: CategoryManagerProps) 
         console.log('Moving dish within category:', { activeDishId, overDishId })
         updateDishOrderWithinCategory(activeDish.category_id, activeDishId, overDishId)
       }
+      return
     }
   }
 
@@ -289,7 +292,6 @@ export default function CategoryManager({ onDataChange }: CategoryManagerProps) 
                   dishes={getDishesForCategory(category.id)}
                   onDelete={deleteCategory}
                   onDataChange={onDataChange}
-                  onUpdateDishes={setDishes}
                 />
               ))}
 

@@ -11,10 +11,9 @@ interface SortableCategoryProps {
   dishes: DishWithCategory[]
   onDelete: (id: number) => void
   onDataChange: () => void
-  onUpdateDishes: (updater: (dishes: DishWithCategory[]) => DishWithCategory[]) => void
 }
 
-export default function SortableCategory({ category, dishes, onDelete, onDataChange, onUpdateDishes }: SortableCategoryProps) {
+export default function SortableCategory({ category, dishes, onDelete, onDataChange }: SortableCategoryProps) {
   const [isAddingDish, setIsAddingDish] = useState(false)
   const [newDish, setNewDish] = useState({
     name: '',
@@ -135,7 +134,6 @@ export default function SortableCategory({ category, dishes, onDelete, onDataCha
         <SortableDish
           dishes={dishes}
           onDataChange={onDataChange}
-          onUpdateDishes={onUpdateDishes}
         />
         
         {/* Drop zone для перетаскивания блюд из других категорий */}
