@@ -11,10 +11,9 @@ interface SortableCategoryProps {
   dishes: DishWithCategory[]
   onDelete: (id: number) => void
   onDataChange: () => void
-  isDraggingDish?: boolean
 }
 
-export default function SortableCategory({ category, dishes, onDelete, onDataChange, isDraggingDish = false }: SortableCategoryProps) {
+export default function SortableCategory({ category, dishes, onDelete, onDataChange }: SortableCategoryProps) {
   const [isAddingDish, setIsAddingDish] = useState(false)
   const [newDish, setNewDish] = useState({
     name: '',
@@ -33,8 +32,7 @@ export default function SortableCategory({ category, dishes, onDelete, onDataCha
     transition,
     isDragging,
   } = useSortable({ 
-    id: `category-${category.id}`,
-    disabled: isDraggingDish
+    id: `category-${category.id}`
   })
 
   const style = {
@@ -139,14 +137,6 @@ export default function SortableCategory({ category, dishes, onDelete, onDataCha
           onDataChange={onDataChange}
         />
         
-        {/* Drop zone для перетаскивания блюд из других категорий */}
-        <div 
-          id={`category-${category.id}`}
-          className="mt-2 p-2 border-2 border-dashed border-vintage-medium-gray rounded-lg text-center text-vintage-light-gray text-sm opacity-50 hover:opacity-100 transition-opacity"
-          style={{ minHeight: '40px' }}
-        >
-          Перетащите блюдо сюда
-        </div>
 
         {/* Форма добавления блюда */}
         {isAddingDish && (
