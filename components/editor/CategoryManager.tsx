@@ -157,6 +157,20 @@ export default function CategoryManager({ onDataChange }: CategoryManagerProps) 
         updateDishCategory(dishId, categoryId)
       }
     }
+    
+    // Обрабатываем перетаскивание блюд внутри категории
+    if (activeId.toString().startsWith('dish-') && overId.toString().startsWith('dish-')) {
+      const activeDishId = parseInt(activeId.toString().replace('dish-', ''))
+      const overDishId = parseInt(overId.toString().replace('dish-', ''))
+      
+      const activeDish = dishes.find(d => d.id === activeDishId)
+      const overDish = dishes.find(d => d.id === overDishId)
+      
+      if (activeDish && overDish && activeDish.category_id === overDish.category_id) {
+        console.log('Moving dish within category:', { activeDishId, overDishId })
+        updateDishOrderWithinCategory(activeDish.category_id, activeDishId, overDishId)
+      }
+    }
   }
 
   const updateDishCategory = async (dishId: number, categoryId: number) => {
@@ -182,6 +196,54 @@ export default function CategoryManager({ onDataChange }: CategoryManagerProps) 
       }
     } catch (error) {
       console.error('Error updating dish category:', error)
+    }
+  }
+
+  const updateDishOrderWithinCategory = async (categoryId: number, activeDishId: number, overDishId: number) => {
+    // Получаем все блюда этой категории с правильной сортировкой
+    const categoryDishes = dishes
+      .filter(dish => dish.category_id === categoryId)
+      .sort((a, b) => a.sort_order - b.sort_order)
+    
+    // Находим индексы
+    const activeIndex = categoryDishes.findIndex(dish => dish.id === activeDishId)
+    const overIndex = categoryDishes.findIndex(dish => dish.id === overDishId)
+    
+    if (activeIndex !== overIndex) {
+      // Создаем новый порядок
+      const newOrder = arrayMove(categoryDishes, activeIndex, overIndex)
+      
+      // Обновляем локальное состояние для мгновенной анимации
+      setDishes(prevDishes => {
+        const updatedDishes = [...prevDishes]
+        newOrder.forEach((dish, index) => {
+          const dishIndex = updatedDishes.findIndex(d => d.id === dish.id)
+          if (dishIndex !== -1) {
+            updatedDishes[dishIndex] = { ...updatedDishes[dishIndex], sort_order: index }
+          }
+        })
+        return updatedDishes
+      })
+      
+      // Сохраняем в базе данных
+      try {
+        const updates = newOrder.map((dish, index) => ({
+          id: dish.id,
+          sort_order: index
+        }))
+
+        await Promise.all(
+          updates.map(update =>
+            fetch('/api/dishes/admin', {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(update)
+            })
+          )
+        )
+      } catch (error) {
+        console.error('Error updating dish order:', error)
+      }
     }
   }
 
